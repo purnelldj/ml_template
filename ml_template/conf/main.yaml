@@ -1,0 +1,40 @@
+defaults:
+  - model: rf
+  - dataset: snt12_era5_srtm
+  - wandb_init: defaults
+  - _self_ # as last argument to allow the override of parameters via this main config
+#    Decomment this parameter to get parallel job running
+#  - hydra/launcher: joblib
+
+# mode is trainval or test
+mode: trainval
+save_model: True
+plot_results: True
+output_dir: ${hydra:runtime.cwd}/outputs/
+save_model_path: ${output_dir}saved_models/${dataset_name}_${model_name}_temp.pkl
+load_model_path: ${output_dir}saved_models/${dataset_name}_${model_name}_temp.pkl
+output_dir_plots: ${output_dir}plots/${group_name}/
+# for wandb logging
+log_to_wandb: False
+project_name: cropclassifier
+model_name: ${hydra:runtime.choices.model}
+dataset_name: ${hydra:runtime.choices.dataset}
+group_name: ${dataset_name}_${model_name}_${mode}
+
+dataset:
+  dirs:
+    parent: ${hydra:runtime.cwd}/datasets/
+    main: ${dataset.dirs.parent}${dataset_name}/
+  normalize: True
+  val_size: 0.3
+  random_state: 142
+
+# do not change below
+datamodule_inst:
+  _target_: ${dataset.datamodule}
+  cfg: ${dataset}
+model_inst:
+  _target_: ${model.modelclass}
+  cfg: ${model}
+  mode: ${mode}
+  load_model_path: ${load_model_path}

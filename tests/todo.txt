@@ -1,0 +1,3 @@
+yaml files:
+check data file to make sure things add up
+check model file to see that it will generate an instance
