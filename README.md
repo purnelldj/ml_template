@@ -4,12 +4,12 @@ template for ML projects
 
 ## installation
 
-download and cd into repository and then:
+requires python ^3.9. Download and cd into repository and then:
 
 ```
 python -m venv .venv
 source venv/bin/activate
-python -m pip install -e .
+python -m pip install -r requirements.txt
 ```
 ## initializing repository
 
