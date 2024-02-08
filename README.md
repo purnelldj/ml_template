@@ -1,6 +1,6 @@
 # ml_template
 
-template for ML projects.
+template for ML projects
 
 ## installation
 
@@ -13,7 +13,9 @@ python -m pip install -e .
 ```
 ## initializing repository
 
-local data should be stored in `ml_template/datasets/datasetname` the trainval and test data files are contained in the same directory.
+search all references of `ml_template` and change it to the desired name.
+
+local data should be stored in `ml_template/datasets/datasetname` the train / val and test data files are contained in the same directory.
 
 ## train and test
 
@@ -36,7 +38,12 @@ python ml_template/train_test.py model.params.max_depth=20
 
 ## logging
 
-to log to wandb
+to log to wandb first check that you are logged in
+
+```
+wandb login
+```
+then when running from the command line:
 
 ```
 python ml_template/train_test.py log_to_wandb=True
@@ -47,5 +54,5 @@ then the config file and results will be uploaded to wandb for every run
 
 ## adding additional models / datasets
 
-to add a new model to work with train_test.py , you need to add a new model class that inherits from the BaseModel class and a corresponding config (yaml) file to instantiate the model class.
+to add a new model to work with `train_test.py` , you need to add a new model class that inherits from the BaseModel class and a corresponding config (yaml) file to instantiate the model class.
 Similarly, if you would like to add a new dataset, you need to add a new data module class that inherits from the BaseDataMod class and add a corresponding config (yaml) file.

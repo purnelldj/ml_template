@@ -1,4 +1,4 @@
-modelclass: cropclassifier.models.rf.RF
+modelclass: ml_template.models.rf.RF
 params:
   max_depth: 10
   random_state: 99

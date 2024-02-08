@@ -5,9 +5,9 @@ from pathlib import Path
 from omegaconf import DictConfig
 from sklearn.ensemble import RandomForestClassifier
 
-from cropclassifier.datamodules.base import BaseDataMod
-from cropclassifier.models.base import BaseModel
-from cropclassifier.utils import check_dir
+from ml_template.datamodules.base import BaseDataMod
+from ml_template.models.base import BaseModel
+from ml_template.utils import check_dir
 
 log = logging.getLogger(__name__)
 

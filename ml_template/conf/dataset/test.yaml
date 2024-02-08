@@ -1,0 +1,12 @@
+datamodule: ml_template.datamodules.test.DM
+# dims per var per file
+dims:
+features:
+  f1:
+    scale: 1
+    adj: 0
+files:
+  trainval:
+    - None
+  test:
+    - None

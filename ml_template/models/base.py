@@ -3,8 +3,8 @@ import pprint
 
 from sklearn.metrics import classification_report
 
-from cropclassifier.datamodules.base import BaseDataMod
-from cropclassifier.utils import check_dir
+from ml_template.datamodules.base import BaseDataMod
+from ml_template.utils import check_dir
 
 
 class BaseModel:
