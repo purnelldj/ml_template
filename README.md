@@ -1,5 +1,6 @@
-# crop classifier template
-mila take-home exercise
+# ml_template
+
+template for ML projects.
 
 ## installation
 
@@ -12,25 +13,25 @@ python -m pip install -e .
 ```
 ## initializing repository
 
-local data should be stored in `cropclassifier/datasets/datasetname` the trainval and test data files are contained in the same directory. For example `cropclassifier/datasets/snt12_era5_srtm/*.nc`
+local data should be stored in `ml_template/datasets/datasetname` the trainval and test data files are contained in the same directory.
 
 ## train and test
 
-the default parameters are found in `cropclassifier/cropclassifier/conf/main.yaml`
+the default parameters are found in `ml_template/ml_template/conf/main.yaml`
 
 ```
-python cropclassifier/train_test.py
+python ml_template/train_test.py
 ```
 or to test
 
 ```
-python cropclassifier/train_test.py mode=test
+python ml_template/train_test.py mode=test
 ```
 
 you could also change model parameters from the command line, for example
 
 ```
-python cropclassifier/train_test.py model.params.max_depth=20
+python ml_template/train_test.py model.params.max_depth=20
 ```
 
 ## logging
@@ -38,7 +39,7 @@ python cropclassifier/train_test.py model.params.max_depth=20
 to log to wandb
 
 ```
-python cropclassifier/train_test.py log_to_wandb=True
+python ml_template/train_test.py log_to_wandb=True
 ```
 
 then the config file and results will be uploaded to wandb for every run
