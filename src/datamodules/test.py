@@ -1,5 +1,6 @@
-from datamodules.base import BaseDataMod
 from omegaconf import DictConfig
+
+from datamodules.base import BaseDataMod
 
 
 class DM(BaseDataMod):
@@ -9,6 +10,7 @@ class DM(BaseDataMod):
         print(cfg)
         print(dsub)
         pass
+
 
 if __name__ == "__main__":
     DM()
