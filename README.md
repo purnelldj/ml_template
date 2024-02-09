@@ -1,4 +1,4 @@
-# src
+# ml_template
 
 template for ML projects
 
