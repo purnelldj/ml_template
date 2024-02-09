@@ -6,9 +6,9 @@ from hydra.utils import instantiate
 from omegaconf import DictConfig
 
 import wandb
-from ml_template.datamodules.base import BaseDataMod
-from ml_template.models.base import BaseModel
-from ml_template.utils import save_hydra_config_to_wandb
+from datamodules.base import BaseDataMod
+from models.base import BaseModel
+from utils import save_hydra_config_to_wandb
 
 
 @hydra.main(config_path="conf", config_name="main", version_base=None)

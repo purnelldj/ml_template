@@ -3,8 +3,8 @@ import pprint
 
 from sklearn.metrics import classification_report
 
-from ml_template.datamodules.base import BaseDataMod
-from ml_template.utils import check_dir
+from datamodules.base import BaseDataMod
+from utils import check_dir
 
 
 class BaseModel:
