@@ -1,10 +1,11 @@
 class BaseDataMod:
-    def __init__(self):
+    def __init__(self, dsub="trainval"):
         self.X, self.y = None, None
         self.X_train, self.y_train = None, None
         self.X_val, self.y_val = None, None
         self.X_test, self.y_test = None, None
         self.label_dict = None
+        self.dsub = dsub
 
     def plot_results(self, y, output_dir_plots: str):
         output_dir_plots = output_dir_plots

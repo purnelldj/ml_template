@@ -1,4 +1,4 @@
-# ml_template
+# src
 
 template for ML projects
 
@@ -9,31 +9,31 @@ requires python ^3.9. Download and cd into repository and then:
 ```
 python -m venv .venv
 source venv/bin/activate
-python -m pip install -r requirements.txt
+python -m pip install -e .
 ```
 ## initializing repository
 
-search all references of `ml_template` and change it to the desired name.
+search all references of `src` and change it to the desired name.
 
-local data should be stored in `ml_template/datasets/datasetname` the train / val and test data files are contained in the same directory.
+local data should be stored in `src/datasets/datasetname` the train / val and test data files are contained in the same directory.
 
 ## train and test
 
-the default parameters are found in `ml_template/ml_template/conf/main.yaml`
+the default parameters are found in `src/src/conf/main.yaml`
 
 ```
-python ml_template/train_test.py
+python src/train_test.py
 ```
 or to test
 
 ```
-python ml_template/train_test.py mode=test
+python src/train_test.py mode=test
 ```
 
 you could also change model parameters from the command line, for example
 
 ```
-python ml_template/train_test.py model.params.max_depth=20
+python src/train_test.py model.params.max_depth=20
 ```
 
 ## logging
@@ -46,7 +46,7 @@ wandb login
 then when running from the command line:
 
 ```
-python ml_template/train_test.py log_to_wandb=True
+python src/train_test.py log_to_wandb=True
 ```
 
 then the config file and results will be uploaded to wandb for every run

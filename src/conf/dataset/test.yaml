@@ -1,4 +1,4 @@
-datamodule: ml_template.datamodules.test.DM
+datamodule: datamodules.test.DM
 # dims per var per file
 dims:
 features:
