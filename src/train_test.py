@@ -23,7 +23,6 @@ def main(cfg: DictConfig):
     # 2. get datamodule
     DM: BaseDataMod = instantiate(cfg.datamodule_inst, dsub=cfg.mode)
     log.info("successfully instantiated the datamodule")
-    exit()
 
     # 3. get model: either instantiate or load saved model
     Model: BaseModel = instantiate(cfg.model_inst)
