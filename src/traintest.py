@@ -2,11 +2,11 @@ import logging
 import pprint
 
 import hydra
+import pytorch_lightning as pl
 from hydra.utils import instantiate
 from omegaconf import DictConfig
 
 import wandb
-from datamodules.base import BaseDataMod
 from models.base import BaseModel
 from utils import save_hydra_config_to_wandb
 
@@ -21,7 +21,7 @@ def main(cfg: DictConfig):
         save_hydra_config_to_wandb(cfg)
 
     # 2. get datamodule
-    DM: BaseDataMod = instantiate(cfg.datamodule_inst, dsub=cfg.mode)
+    DM: pl.LightningDataModule = instantiate(cfg.datamodule_inst)
     log.info("successfully instantiated the datamodule")
 
     # 3. get model: either instantiate or load saved model
@@ -30,7 +30,7 @@ def main(cfg: DictConfig):
     log.info(f"model params:\n{params_str}")
 
     # 4. train model
-    if cfg.mode == "trainval":
+    if cfg.mode == "train":
         Model.trainer(DM)
 
     # 5. evaluate model
@@ -39,7 +39,7 @@ def main(cfg: DictConfig):
         wandb.log(metrics)
 
     # 6. save model
-    if cfg.save_model and cfg.mode == "trainval":
+    if cfg.save_model and cfg.mode == "train":
         Model.saver(cfg.save_model_path)
 
 
