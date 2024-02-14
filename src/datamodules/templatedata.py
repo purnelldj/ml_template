@@ -1,4 +1,4 @@
-import pytorch_lightning as pl
+import lightning as L
 import torch
 from omegaconf import DictConfig
 from torch.utils.data import DataLoader, Dataset, random_split
@@ -20,7 +20,7 @@ class TemplateDS(Dataset):
         pass
 
 
-class TemplateDM(pl.LightningDataModule):
+class TemplateDM(L.LightningDataModule):
     # https://lightning.ai/docs/pytorch/stable/data/datamodule.html#lightningdatamodule-api
 
     def __init__(self, cfg: DictConfig):
