@@ -1,12 +1,10 @@
 defaults:
   - model: templatemodel
-  - dataset: templatedata
+  - dataset: waterbodies
   - wandb_init: defaults
   - _self_ # as last argument to allow the override of parameters via this main config
 #    Decomment this parameter to get parallel job running
 
-# mode is trainval or test
-mode: trainval
 save_model: True
 plot_results: True
 output_dir: ${hydra:runtime.cwd}/outputs/
@@ -18,24 +16,23 @@ log_to_wandb: False
 project_name: ml_template
 model_name: ${hydra:runtime.choices.model}
 dataset_name: ${hydra:runtime.choices.dataset}
-group_name: ${dataset_name}_${model_name}_${mode}
+group_name: ${dataset_name}_${model_name}
 
 dataset:
   dirs:
     parent: ${hydra:runtime.cwd}/datasets/
     main: ${dataset.dirs.parent}${dataset_name}/
   normalize: True
-  test_size: 0.3
-  val_size: 0.1
+  test_size: 0.2
+  val_size: 0.2
   seed: 142
   batch_size: 64
 
 # do not change below
 datamodule_inst:
-  _target_: ${dataset.datamodule}
+  _target_: ${dataset.module}
   cfg: ${dataset}
 model_inst:
-  _target_: ${model.modelclass}
+  _target_: ${model.module}
   cfg: ${model}
-  mode: ${mode}
   load_model_path: ${load_model_path}

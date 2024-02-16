@@ -1,0 +1,9 @@
+module: models.unet.UNet
+# DEVICE: cuda
+EPOCHS: 5
+BATCH_SIZE: 16
+LR: 0.001
+ratio: 0.5 #Various ratios could perform better for visualization
+sample_num: 2
+ENCODER: 'resnet50'
+WEIGHTS: 'imagenet'

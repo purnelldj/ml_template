@@ -20,15 +20,15 @@ also taken inspiration from https://github.com/ashleve/lightning-hydra-template
 class TemplateModel(L.LightningModule):
     def __init__(
         self,
-        net: torch.nn.Module,
-        criterion: torch.nn.modules.loss._Loss,
-        optimizer: torch.optim.Optimizer,
-        scheduler: torch.optim.lr_scheduler,
-        compile: bool,
+        # net: torch.nn.Module = None,
+        # criterion: torch.nn.modules.loss._Loss = None,
+        # optimizer: torch.optim.Optimizer,
+        # scheduler: torch.optim.lr_scheduler,
+        # compile: bool,
     ) -> None:
         super().__init__()
-        self.net = net
-        self.criterion = criterion
+        self.net = torch.nn.Module()
+        self.criterion = torch.nn.modules.loss._Loss()
 
     def setup(self, stage: str) -> None:
         """Lightning hook that is called at the beginning of fit (train + validate), validate, test, or predict."""

@@ -1,1 +1,1 @@
-datamodule: datamodules.templatedata.TemplateDM
+module: datamodules.templatedata.TemplateDM

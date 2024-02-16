@@ -2,12 +2,13 @@ import logging
 import pprint
 
 import hydra
-import pytorch_lightning as pl
+import lightning as L
+import matplotlib.pyplot as plt
+import numpy as np
 from hydra.utils import instantiate
 from omegaconf import DictConfig
 
-import wandb
-from models.base import BaseModel
+from models.templatemodel import TemplateModel
 from utils import save_hydra_config_to_wandb
 
 
@@ -21,26 +22,32 @@ def main(cfg: DictConfig):
         save_hydra_config_to_wandb(cfg)
 
     # 2. get datamodule
-    DM: pl.LightningDataModule = instantiate(cfg.datamodule_inst)
+    DM: L.LightningDataModule = instantiate(cfg.datamodule_inst)
     log.info("successfully instantiated the datamodule")
 
+    # TEMP: test that dataloader works...
+    DM.setup()
+    train_dataloader = DM.train_dataloader()
+    for x, y in train_dataloader:
+        img = x[0, :, :, :]
+        mask = y[0, :, :, :]
+        print(img.shape, mask.shape)
+        _, axarr = plt.subplots(1, 2)
+        axarr[1].imshow(np.squeeze(mask.numpy()), cmap="gray")
+        axarr[0].imshow(np.transpose(img.numpy(), (1, 2, 0)))
+        plt.show()
+        plt.close()
+        break
+
     # 3. get model: either instantiate or load saved model
-    Model: BaseModel = instantiate(cfg.model_inst)
+    Model: TemplateModel = instantiate(cfg.model_inst)
     params_str = pprint.pformat(Model.get_params_dict())
     log.info(f"model params:\n{params_str}")
 
     # 4. train model
-    if cfg.mode == "train":
-        Model.trainer(DM)
-
-    # 5. evaluate model
-    metrics = Model.evaluate(cfg.mode, DM, cfg.plot_results, cfg.output_dir_plots)
-    if cfg.log_to_wandb:
-        wandb.log(metrics)
-
-    # 6. save model
-    if cfg.save_model and cfg.mode == "train":
-        Model.saver(cfg.save_model_path)
+    if cfg.stage == "train":
+        trainer = L.Trainer()
+        trainer.fit(model=Model, datamodule=DM, stage="train")
 
 
 if __name__ == "__main__":
