@@ -52,7 +52,7 @@ class WBDM(pl.LightningDataModule):
         # for downloading and tokenizing data
         pass
 
-    def setup(self):
+    def setup(self, stage: str):
         # count number of classes
         # build vocabulary
         # perform train/val/test splits

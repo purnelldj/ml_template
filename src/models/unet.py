@@ -1,11 +1,12 @@
 import segmentation_models_pytorch as smp
+import torch
 from omegaconf import DictConfig
 from segmentation_models_pytorch.losses import DiceLoss
 
-from models.templatemodel import TemplateModel
+from models.base import BaseModel
 
 
-class UNet(TemplateModel):
+class UNet(BaseModel):
     def __init__(self, cfg: DictConfig) -> None:
         super().__init__()
         self.net = smp.Unet(
@@ -15,10 +16,17 @@ class UNet(TemplateModel):
             classes=1,
             activation=None,
         )
+        self.LR = cfg.LR
+        self.momentum = cfg.momentum
         self.criterion = DiceLoss(mode="binary")
+        # self.optimizer = torch.optim.SGD(self.parameters(), lr=cfg.LR, momentum=0.9)
+        self.compile = False
 
     def configure_optimizers(self):
-        optimizer = self.hparams.optimizer(params=self.trainer.model.parameters())
+        optimizer = torch.optim.SGD(
+            self.parameters(), lr=self.LR, momentum=self.momentum
+        )
+        # optimizer = self.hparams.optimizer(params=self.trainer.model.parameters())
         if self.hparams.scheduler is not None:
             scheduler = self.hparams.scheduler(optimizer=optimizer)
             return {

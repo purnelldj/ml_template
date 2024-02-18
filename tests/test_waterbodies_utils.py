@@ -10,6 +10,8 @@ def test_im_mask_transform():
     im, mask = im_mask_transform(im, mask, height, width)
     assert im.shape == torch.Size([3, 512, 512])
     assert mask.shape == torch.Size([1, 512, 512])
+    assert im.dtype == torch.float32
+    assert mask.dtype == torch.float32
 
 
 if __name__ == "__main__":
