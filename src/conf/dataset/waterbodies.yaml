@@ -1,6 +1,7 @@
 module: datamodules.waterbodies.WBDM
 # dims per var per file
-batch_size: 2
+batch_size: 12
+mask_ratio: 0.5
 dirs:
   ims: ${dataset.dirs.main}Images/
   masks: ${dataset.dirs.main}Masks/

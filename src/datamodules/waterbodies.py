@@ -1,12 +1,16 @@
 import glob
+import logging
 
+import matplotlib.pyplot as plt
 import numpy as np
-import pytorch_lightning as pl
 import torch
 from omegaconf import DictConfig
-from torch.utils.data import DataLoader, Dataset, random_split
+from torch.utils.data import Dataset, random_split
 
+from datamodules.base import BaseDM
 from datamodules.waterbodies_utils import im_mask_transform
+
+log = logging.getLogger(__name__)
 
 
 class WBDS(Dataset):
@@ -19,7 +23,7 @@ class WBDS(Dataset):
         self.height = cfg.dims.height
         self.width = cfg.dims.width
 
-        # first get all files
+        # all files
         ims_all = glob.glob(self.dir_ims + "water_body_*")
         masks_all = glob.glob(self.dir_masks + "water_body_*")
         self.ims_all = np.array(ims_all)
@@ -36,21 +40,13 @@ class WBDS(Dataset):
         return im, mask
 
 
-class WBDM(pl.LightningDataModule):
+class WBDM(BaseDM):
     # https://lightning.ai/docs/pytorch/stable/data/datamodule.html#lightningdatamodule-api
 
     def __init__(self, cfg: DictConfig):
-        super().__init__()
+        super().__init__(cfg)
         # inherit from class
-        self.cfg = cfg
-        self.test_size = cfg.test_size
-        self.val_size = cfg.val_size
-        self.seed = cfg.seed
-        self.batch_size = cfg.batch_size
-
-    def prepare_data(self):
-        # for downloading and tokenizing data
-        pass
+        self.mask_ratio = cfg.mask_ratio
 
     def setup(self, stage: str):
         # count number of classes
@@ -68,18 +64,27 @@ class WBDM(pl.LightningDataModule):
         )
         self.wb_predict = None
 
-        print("train / val / test split: ")
-        print(f"{len(self.wb_train)} / {len(self.wb_val)} / {len(self.wb_test)}")
+        log.info("train / val / test split: ")
+        log.info(f"{len(self.wb_train)} / {len(self.wb_val)} / {len(self.wb_test)}")
 
-    def train_dataloader(self):
-        return DataLoader(self.wb_train, batch_size=self.batch_size)
-
-    def val_dataloader(self):
-        return DataLoader(self.wb_val, batch_size=self.batch_size)
-
-    def test_dataloader(self):
-        return DataLoader(self.wb_test, batch_size=self.batch_size)
-
-    def predict_dataloader(self):
-        # this is for unlabeled data
-        pass
+    def plot_xy(
+        self, x: torch.tensor, y: torch.tensor, ypred: torch.tensor = None
+    ) -> None:
+        """To plot x, y and prediction."""
+        if len(x.shape) > 3:
+            raise Exception("plot one image at a time")
+        plotl = 2
+        if ypred is not None:
+            plotl = 3
+        _, axarr = plt.subplots(1, plotl)
+        xnp = np.transpose(x.numpy(), (1, 2, 0))
+        ynp = np.squeeze(y.numpy())
+        axarr[0].imshow(xnp)
+        axarr[1].imshow(ynp, cmap="gray")
+        if ypred is not None:
+            ypred = torch.sigmoid(ypred)
+            ypred = (ypred > self.mask_ratio) * 1.0
+            yprednp = np.squeeze(ypred.numpy())
+            axarr[2].imshow(yprednp, cmap="gray")
+        plt.show()
+        plt.close()

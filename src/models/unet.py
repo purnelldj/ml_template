@@ -16,15 +16,15 @@ class UNet(BaseModel):
             classes=1,
             activation=None,
         )
-        self.LR = cfg.LR
-        self.momentum = cfg.momentum
+        self.hparams.lr = cfg.lr
+        self.hparams.momentum = cfg.momentum
         self.criterion = DiceLoss(mode="binary")
         # self.optimizer = torch.optim.SGD(self.parameters(), lr=cfg.LR, momentum=0.9)
         self.compile = False
 
     def configure_optimizers(self):
         optimizer = torch.optim.SGD(
-            self.parameters(), lr=self.LR, momentum=self.momentum
+            self.parameters(), lr=self.hparams.lr, momentum=self.hparams.momentum
         )
         # optimizer = self.hparams.optimizer(params=self.trainer.model.parameters())
         if self.hparams.scheduler is not None:

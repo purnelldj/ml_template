@@ -4,7 +4,7 @@ from omegaconf import DictConfig
 from torch.utils.data import DataLoader, Dataset, random_split
 
 
-class TemplateDS(Dataset):
+class BaseDS(Dataset):
     # https://pytorch.org/docs/stable/data.html#torch.utils.data.Dataset
 
     def __init__(self, cfg: DictConfig) -> None:
@@ -20,7 +20,7 @@ class TemplateDS(Dataset):
         pass
 
 
-class TemplateDM(L.LightningDataModule):
+class BaseDM(L.LightningDataModule):
     # https://lightning.ai/docs/pytorch/stable/data/datamodule.html#lightningdatamodule-api
 
     def __init__(self, cfg: DictConfig):
@@ -39,7 +39,7 @@ class TemplateDM(L.LightningDataModule):
     def setup(self):
         """Perform train/val/test splits, create datasets, apply transforms."""
         # Assign Train/val split(s) for use in Dataloaders
-        wb_full = TemplateDS(self.cfg)
+        wb_full = BaseDS(self.cfg)
         self.wb_train, self.wb_val, self.wb_test = random_split(
             wb_full,
             [1 - self.val_size - self.test_size, self.val_size, self.test_size],
@@ -50,11 +50,11 @@ class TemplateDM(L.LightningDataModule):
         print("train / val / test split: ")
         print(f"{len(self.wb_train)} / {len(self.wb_val)} / {len(self.wb_test)}")
 
-    def train_dataloader(self):
-        return DataLoader(self.wb_train, batch_size=self.batch_size)
+    def train_dataloader(self, **kwargs):
+        return DataLoader(self.wb_train, batch_size=self.batch_size, **kwargs)
 
-    def val_dataloader(self):
-        return DataLoader(self.wb_val, batch_size=self.batch_size)
+    def val_dataloader(self, **kwargs):
+        return DataLoader(self.wb_val, batch_size=self.batch_size, **kwargs)
 
     def test_dataloader(self):
         return DataLoader(self.wb_test, batch_size=self.batch_size)
@@ -62,3 +62,10 @@ class TemplateDM(L.LightningDataModule):
     def predict_dataloader(self):
         # this is for unlabeled data
         pass
+
+    def plot_xy(
+        self, x: torch.tensor, y: torch.tensor, ypred: torch.tensor = None
+    ) -> None:
+        """To plot x, y and prediction."""
+        x, y, ypred
+        raise Exception("this is a template class")
