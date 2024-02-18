@@ -1,92 +1,99 @@
-import logging
-import pprint
+from typing import Tuple
 
-from sklearn.metrics import classification_report
+import lightning as L
+import torch
 
-from datamodules.base import BaseDataMod
-from utils import check_dir
+"""
+https://lightning.ai/docs/pytorch/stable/common/lightning_module.html#lightningmodule
+A LightningModule organizes your PyTorch code into 6 sections:
+Initialization (__init__ and setup()).
+Train Loop (training_step())
+Validation Loop (validation_step())
+Test Loop (test_step())
+Prediction Loop (predict_step())
+Optimizers and LR Schedulers (configure_optimizers())
 
-
-class BaseModel:
-    def __init__(self):
-        self.model_name = None
-        self.model = None
-
-    def trainer(self, DM: BaseDataMod):
-        raise Exception("this is a placeholder")
-
-    def predictor(self, X: list):
-        raise Exception("this is a placeholder")
-
-    def saver(self, path: str):
-        raise Exception("this is a placeholder")
-
-    def loader(self, path: str):
-        raise Exception("this is a placeholder")
-
-    def get_params_dict(self):
-        raise Exception("this is a placeholder")
-
-    def evaluate(
-        self, mode: str, DM: BaseDataMod, plot_results: bool, output_dir_plots: str
-    ):
-        log = logging.getLogger(__name__)
-
-        metrics = {}
-        log.info(f"logging metrics for mode : {mode}")
-
-        if mode == "trainval":
-            X_train, y_train = DM.X_train, DM.y_train
-            X_val, y_val = DM.X_val, DM.y_val
-            y_train_pred = self.predictor(X_train)
-            y_val_pred = self.predictor(X_val)
-            metrics["train"] = get_metrics(y_train, y_train_pred, DM.label_dict)
-            metrics["val"] = get_metrics(y_val, y_val_pred, DM.label_dict)
-            if plot_results:
-                X, y = DM.X, DM.y
-                y_pred = self.predictor(X)
-                output_dir_plots_true = output_dir_plots + "true/"
-                output_dir_plots_pred = output_dir_plots + "pred/"
-                check_dir(output_dir_plots_true)
-                check_dir(output_dir_plots_pred)
-                DM.plot_results(y, output_dir_plots + "true/")
-                DM.plot_results(y_pred, output_dir_plots + "pred/")
-        elif mode == "test":
-            X_test, y_test = DM.X_test, DM.y_test
-            y_test_pred = self.predictor(X_test)
-            metrics["test"] = get_metrics(y_test, y_test_pred, DM.label_dict)
-            if plot_results:
-                output_dir_plots_true = output_dir_plots + "true/"
-                output_dir_plots_pred = output_dir_plots + "pred/"
-                check_dir(output_dir_plots_true)
-                check_dir(output_dir_plots_pred)
-                DM.plot_results(y_test, output_dir_plots + "true/")
-                DM.plot_results(y_test_pred, output_dir_plots + "pred/")
-
-        metrics_str = pprint.pformat(metrics)
-        log.info(f"\n{metrics_str}")
-
-        return metrics
+also taken inspiration from https://github.com/ashleve/lightning-hydra-template
+"""
 
 
-def get_metrics(y_true, y_pred, label_dict: dict):
-    """
-    y_true and y_pred are array-like
-    """
-    # better to use the classification report than individual metrics
-    # metrics["accuracy"] = accuracy_score(y_true, y_pred)
-    # metrics["f1"] = f1_score(y_true, y_pred, pos_label=pos_label)
-    # metrics["precision"] = precision_score(y_true, y_pred, pos_label=pos_label)
-    # metrics["recall"] = recall_score(y_true, y_pred, pos_label=pos_label)
-    target_names = [lbl for lbl in label_dict]
-    label_vals = [label_dict[lbl] for lbl in label_dict]
-    metrics = classification_report(
-        y_true, y_pred, labels=label_vals, target_names=target_names, output_dict=True
-    )
-    counter = {}
-    for name, val in zip(target_names, label_vals):
-        counter[f"{name}_true"] = len(y_true[y_true == val])
-        counter[f"{name}_pred"] = len(y_pred[y_pred == val])
-    metrics["counter"] = counter
+class BaseModel(L.LightningModule):
+    def __init__(
+        self,
+        net: torch.nn.Module = None,
+        criterion: torch.nn.modules.loss._Loss = None,
+        optimizer: torch.optim.Optimizer = None,
+        scheduler: torch.optim.lr_scheduler = None,
+        compile: bool = False,
+    ) -> None:
+        super().__init__()
+        self.net = net
+        self.criterion = criterion
+        self.hparams.optimizer = optimizer
+        self.hparams.compile = compile
+        self.hparams.scheduler = scheduler
 
-    return metrics
+    def setup(self, stage: str) -> None:
+        """Lightning hook that is called at the beginning of fit (train + validate), validate, test, or predict."""
+        if self.hparams.compile and stage == "fit":
+            self.net = torch.compile(self.net)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """Perform a forward pass through the model `self.net`."""
+        return self.net(x)
+
+    def training_step(
+        self, batch: Tuple[torch.Tensor, torch.Tensor], batch_idx: int
+    ) -> torch.Tensor:
+        """Perform a single training step on a batch of data from the training set."""
+        x, y = batch
+        logits = self.forward(x)
+        loss = self.criterion(logits, y)
+
+        # update and log metrics
+        self.log(
+            "train_loss", loss, on_step=True, on_epoch=True, prog_bar=True, logger=True
+        )
+        return loss
+
+    def validation_step(self, batch, batch_idx):
+        x, y = batch
+
+        # implement your own
+        x, y = batch
+        logits = self.forward(x)
+        loss = self.criterion(logits, y)
+
+        # calculate acc
+        val_acc = None
+
+        # log the outputs!
+        self.log_dict({"val_loss": loss, "val_acc": val_acc})
+
+    def test_step(self, batch, batch_idx):
+        x, y = batch
+
+        # implement your own
+        out = self(x)
+        loss = self.loss(out, y)
+
+        # calculate acc
+        test_acc = None
+
+        # log the outputs!
+        self.log_dict({"val_loss": loss, "test_acc": test_acc})
+
+    def configure_optimizers(self):
+        optimizer = self.hparams.optimizer(params=self.trainer.model.parameters())
+        if self.hparams.scheduler is not None:
+            scheduler = self.hparams.scheduler(optimizer=optimizer)
+            return {
+                "optimizer": optimizer,
+                "lr_scheduler": {
+                    "scheduler": scheduler,
+                    "monitor": "val/loss",
+                    "interval": "epoch",
+                    "frequency": 1,
+                },
+            }
+        return {"optimizer": optimizer}

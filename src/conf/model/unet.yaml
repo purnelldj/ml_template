@@ -1,0 +1,6 @@
+module: models.unet.UNet
+EPOCHS: 5
+lr: 0.001
+momentum: 0.9
+ENCODER: 'resnet50'
+WEIGHTS: 'imagenet'

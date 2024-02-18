@@ -1,0 +1,19 @@
+module: datamodules.waterbodies.WBDM
+# dims per var per file
+batch_size: 12
+mask_ratio: 0.5
+dirs:
+  ims: ${dataset.dirs.main}Images/
+  masks: ${dataset.dirs.main}Masks/
+dims:
+  height: 512
+  width: 512
+features:
+  f1:
+    scale: 1
+    adj: 0
+files:
+  trainval:
+    - None
+  test:
+    - None

@@ -1,46 +1,67 @@
 import logging
-import pprint
 
 import hydra
-import pytorch_lightning as pl
+import lightning as L
+import torch
 from hydra.utils import instantiate
 from omegaconf import DictConfig
 
-import wandb
+from datamodules.base import BaseDM
 from models.base import BaseModel
 from utils import save_hydra_config_to_wandb
+
+# import pprint
 
 
 @hydra.main(config_path="conf", config_name="main", version_base=None)
 def main(cfg: DictConfig):
-    # 1. config logging
+    # config logging
     log = logging.getLogger(__name__)
     log.info(f"starting log for: {cfg.group_name}")
     if cfg.log_to_wandb:
         instantiate(cfg.wandb_init)
         save_hydra_config_to_wandb(cfg)
 
-    # 2. get datamodule
-    DM: pl.LightningDataModule = instantiate(cfg.datamodule_inst)
+    # get datamodule
+    DM: BaseDM = instantiate(cfg.datamodule_inst)
     log.info("successfully instantiated the datamodule")
 
-    # 3. get model: either instantiate or load saved model
+    # get model: either instantiate or load saved model
     Model: BaseModel = instantiate(cfg.model_inst)
-    params_str = pprint.pformat(Model.get_params_dict())
-    log.info(f"model params:\n{params_str}")
+    log.info(f"model hparams: \n {Model.hparams}")
 
-    # 4. train model
-    if cfg.mode == "train":
-        Model.trainer(DM)
+    # visualize datamodule and model output=
+    if cfg.visualize_data_and_model:
+        visualize_data_model_fun(DM, Model)
 
-    # 5. evaluate model
-    metrics = Model.evaluate(cfg.mode, DM, cfg.plot_results, cfg.output_dir_plots)
-    if cfg.log_to_wandb:
-        wandb.log(metrics)
+    # train model
+    if cfg.stage == "fit":
+        DM.setup(stage=cfg.stage)
+        log.info("setup datamodule for training")
+        trainer = L.Trainer()
+        trainer.fit(
+            model=Model,
+            train_dataloaders=DM.train_dataloader(num_workers=11),
+            # val_dataloaders=DM.val_dataloader()
+        )
 
-    # 6. save model
-    if cfg.save_model and cfg.mode == "train":
-        Model.saver(cfg.save_model_path)
+
+def visualize_data_model_fun(DM: BaseDM, Model: BaseModel) -> None:
+    DM.setup(stage="fit")
+    train_dataloader = DM.train_dataloader()
+    for x, y in train_dataloader:
+        xplot, yplot = x[0], y[0]
+        # now try run the model forwards
+        try:
+            with torch.no_grad():
+                ypred = Model.forward(x)
+        except Exception as e:
+            print("issue running model")
+            raise e
+        ypred.detach()
+        ypredplot = ypred[0]
+        DM.plot_xy(xplot, yplot, ypredplot)
+        break
 
 
 if __name__ == "__main__":

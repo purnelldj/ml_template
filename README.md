@@ -30,13 +30,13 @@ traintest
 or to test
 
 ```
-traintest mode=test
+traintest stage=test
 ```
 
 you could also change model parameters from the command line, for example
 
 ```
-traintest model.params.max_depth=20
+traintest model.lr=0.001
 ```
 
 ## logging
