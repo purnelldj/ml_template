@@ -1,6 +1,19 @@
-module: models.unet.UNet
-EPOCHS: 5
-lr: 0.001
-momentum: 0.9
-ENCODER: 'resnet50'
-WEIGHTS: 'imagenet'
+_target_: models.unet.UNet
+
+net:
+  _target_:
+  ENCODER: 'resnet50'
+  WEIGHTS: 'imagenet'
+
+criterion:
+  _target_:
+
+accuracy:
+  _target_: torchmetrics.classification.Accuracy
+  task:
+  num_classes:
+
+optimizer:
+  _target_: torch.optim.Adam
+  _partial_: true
+  lr: 1e-3

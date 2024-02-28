@@ -1,7 +1,7 @@
 _target_: models.cnn.CNNModule
 
 net:
-  _target_: models.cnn.CNN4layerLarge2
+  _target_: models.cnn.CNN3layer
 
 criterion:
   _target_: torch.nn.CrossEntropyLoss

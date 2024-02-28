@@ -11,14 +11,15 @@ stage: fit
 # ckpt_path: ${output_dir}/saved_runs/best3layer/ckpt.ckpt
 ckpt_path:
 logger:
-  name: cnn4layerlarge2
+  name: cnn3layer_test2
 trainer:
-  max_epochs: 101
+  max_epochs: 21
+# note max epoch means up to not including
 
 visualize_data: False
 visualize_modelout: False
 
-project_name: revalue_classifier
+project_name: ml_template
 output_dir: ${hydra:runtime.cwd}/outputs/
 model_name: ${hydra:runtime.choices.model}
 logger_name: ${hydra:runtime.choices.logger}
