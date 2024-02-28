@@ -20,23 +20,25 @@ also taken inspiration from https://github.com/ashleve/lightning-hydra-template
 class BaseModel(L.LightningModule):
     def __init__(
         self,
-        net: torch.nn.Module = None,
-        criterion: torch.nn.modules.loss._Loss = None,
-        optimizer: torch.optim.Optimizer = None,
+        net: torch.nn.Module,
+        optimizer: torch.optim.Optimizer,
+        criterion,
+        accuracy,
         scheduler: torch.optim.lr_scheduler = None,
         compile: bool = False,
     ) -> None:
         super().__init__()
+
+        # this line allows to access init params with 'self.hparams' attribute
+        # also ensures init params will be stored in ckpt
+        self.save_hyperparameters(logger=False, ignore=["net", "criterion"])
+
+        self.accuracy = accuracy
+
         self.net = net
         self.criterion = criterion
-        self.hparams.optimizer = optimizer
-        self.hparams.compile = compile
-        self.hparams.scheduler = scheduler
 
-    def setup(self, stage: str) -> None:
-        """Lightning hook that is called at the beginning of fit (train + validate), validate, test, or predict."""
-        if self.hparams.compile and stage == "fit":
-            self.net = torch.compile(self.net)
+        self.epoch_counter = 0
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """Perform a forward pass through the model `self.net`."""
@@ -47,53 +49,75 @@ class BaseModel(L.LightningModule):
     ) -> torch.Tensor:
         """Perform a single training step on a batch of data from the training set."""
         x, y = batch
-        logits = self.forward(x)
-        loss = self.criterion(logits, y)
-
-        # update and log metrics
-        self.log(
-            "train_loss", loss, on_step=True, on_epoch=True, prog_bar=True, logger=True
-        )
+        loss = self.trainval_log_step(x, y, "train")
         return loss
 
     def validation_step(self, batch, batch_idx):
         x, y = batch
-
-        # implement your own
-        x, y = batch
-        logits = self.forward(x)
-        loss = self.criterion(logits, y)
-
-        # calculate acc
-        val_acc = None
-
-        # log the outputs!
-        self.log_dict({"val_loss": loss, "val_acc": val_acc})
+        self.trainval_log_step(x, y, "val")
 
     def test_step(self, batch, batch_idx):
         x, y = batch
+        logits = self(x)
+        yhat = self.logits_to_yhat(logits)
 
-        # implement your own
-        out = self(x)
-        loss = self.loss(out, y)
+        self.logits_all.append(logits)
+        self.y_all.append(y)
+        self.yhat_all.append(yhat)
 
-        # calculate acc
-        test_acc = None
+    def trainval_log_step(self, x: torch.tensor, y: torch.tensor, train_or_val: str):
+        logits = self(x)
+        yhat = self.logits_to_yhat(logits)
+        loss = self.criterion(logits, y)
+        acc = self.accuracy(yhat, y)
 
-        # log the outputs!
-        self.log_dict({"val_loss": loss, "test_acc": test_acc})
+        self.y_all.append(y)
+        self.yhat_all.append(yhat)
+
+        # update and log metrics
+        self.log(
+            train_or_val + "_loss",
+            loss,
+            on_step=False,
+            on_epoch=True,
+            prog_bar=True,
+            logger=True,
+        )
+        self.log(
+            train_or_val + "_acc",
+            acc,
+            on_step=False,
+            on_epoch=True,
+            prog_bar=True,
+            logger=True,
+        )
+
+        if train_or_val == "train":
+            return loss
+
+    def on_train_epoch_start(self) -> None:
+        self.epoch_counter += 1
+        self.logits_all = []
+        self.y_all = []
+        self.yhat_all = []
+
+    def on_validation_epoch_start(self) -> None:
+        self.logits_all = []
+        self.y_all = []
+        self.yhat_all = []
+
+    def on_test_epoch_start(self) -> None:
+        self.logits_all = []
+        self.y_all = []
+        self.yhat_all = []
+
+    def on_test_epoch_end(self) -> None:
+        """Lightning hook that is called when a test epoch ends."""
+        pass
 
     def configure_optimizers(self):
-        optimizer = self.hparams.optimizer(params=self.trainer.model.parameters())
-        if self.hparams.scheduler is not None:
-            scheduler = self.hparams.scheduler(optimizer=optimizer)
-            return {
-                "optimizer": optimizer,
-                "lr_scheduler": {
-                    "scheduler": scheduler,
-                    "monitor": "val/loss",
-                    "interval": "epoch",
-                    "frequency": 1,
-                },
-            }
-        return {"optimizer": optimizer}
+        optimizer = self.hparams.optimizer(params=self.parameters())
+        return optimizer
+
+    def logits_to_yhat(self, logits: torch.tensor) -> torch.tensor:
+        pass

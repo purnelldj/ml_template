@@ -1,3 +1,5 @@
+import logging
+
 import lightning as L
 import torch
 from omegaconf import DictConfig
@@ -23,41 +25,54 @@ class BaseDS(Dataset):
 class BaseDM(L.LightningDataModule):
     # https://lightning.ai/docs/pytorch/stable/data/datamodule.html#lightningdatamodule-api
 
-    def __init__(self, cfg: DictConfig):
+    def __init__(
+        self,
+        test_size: float = 0.2,
+        val_size: float = 0.2,
+        seed: int = 1,
+        batch_size: int = 12,
+        dir: str = None,
+        Dataset: Dataset = None,
+        **kwargs,
+    ):
         super().__init__()
         # inherit from class
-        self.cfg = cfg
-        self.test_size = cfg.test_size
-        self.val_size = cfg.val_size
-        self.seed = cfg.seed
-        self.batch_size = cfg.batch_size
+        self.test_size = test_size
+        self.val_size = val_size
+        self.seed = seed
+        self.batch_size = batch_size
+        self.Dataset = Dataset
+        self.dir = dir
+        self.log = logging.getLogger(__name__)
 
     def prepare_data(self):
         """For downloading and tokenizing data."""
         pass
 
-    def setup(self):
+    def setup(self, stage: str = "fit"):
         """Perform train/val/test splits, create datasets, apply transforms."""
         # Assign Train/val split(s) for use in Dataloaders
-        wb_full = BaseDS(self.cfg)
-        self.wb_train, self.wb_val, self.wb_test = random_split(
-            wb_full,
+        xy_full = self.Dataset(self.cfg)
+        self.xy_train, self.xy_val, self.xy_test = random_split(
+            xy_full,
             [1 - self.val_size - self.test_size, self.val_size, self.test_size],
             generator=torch.Generator().manual_seed(self.seed),
         )
-        self.wb_predict = None
+        self.xy_predict = None
 
-        print("train / val / test split: ")
-        print(f"{len(self.wb_train)} / {len(self.wb_val)} / {len(self.wb_test)}")
+        self.log.info("train / val / test split: ")
+        self.log.info(
+            f"{len(self.xy_train)} / {len(self.xy_val)} / {len(self.xy_test)}"
+        )
 
     def train_dataloader(self, **kwargs):
-        return DataLoader(self.wb_train, batch_size=self.batch_size, **kwargs)
+        return DataLoader(self.xy_train, batch_size=self.batch_size, **kwargs)
 
     def val_dataloader(self, **kwargs):
-        return DataLoader(self.wb_val, batch_size=self.batch_size, **kwargs)
+        return DataLoader(self.xy_val, batch_size=self.batch_size, **kwargs)
 
-    def test_dataloader(self):
-        return DataLoader(self.wb_test, batch_size=self.batch_size)
+    def test_dataloader(self, **kwargs):
+        return DataLoader(self.xy_test, batch_size=self.batch_size, **kwargs)
 
     def predict_dataloader(self):
         # this is for unlabeled data

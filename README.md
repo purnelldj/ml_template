@@ -6,10 +6,6 @@ template for ML projects
 
 search all references of `ml_template` and change it to the desired repo name.
 
-local data should be stored in `src/datasets/datasetname`.
-
-run `pre-commit install`.
-
 ## installation
 
 Download and cd into repository and then:
@@ -20,9 +16,9 @@ source venv/bin/activate
 python -m pip install -e .
 ```
 
-## train and test
+## usage
 
-the default parameters are found in `src/conf/main.yaml`
+The main entry point is in [src/traintest.py](src/traintest.py), you can use it from the command line by typing
 
 ```
 traintest
@@ -30,14 +26,14 @@ traintest
 or to test
 
 ```
-traintest stage=test
+traintest stage=test ckpt_path=path/to/ckpt.ckpt
 ```
+you could also change parameters from the command line, for example
 
-you could also change model parameters from the command line, for example
-
 ```
-traintest model.lr=0.001
+traintest model.optimizer.lr=0.001
 ```
+a hierarchy of configuration files is found in [src/conf](src/conf) and the default parameters are stored in [src/conf/main.yaml](src/conf/main.yaml).
 
 ## logging
 
@@ -46,16 +42,10 @@ to log to wandb first check that you are logged in
 ```
 wandb login
 ```
-then when running from the command line:
-
-```
-traintest log_to_wandb=True
-```
-
 then the config file and results will be uploaded to wandb for every run
 
 
 ## adding additional models / datasets
 
-to add a new model to work with `traintest.py` , you need to add a new model class that inherits from the BaseModel class and a corresponding config (yaml) file to instantiate the model class.
-If you would like to add a new dataset, you need to add a new data set and data module that inherits from pytorch lightning datamodule class.
+By default, data should be stored in the directory [datasets](). If you would like to add a new dataset, you need to add a new data module that inherits from the `BaseDM` class and a new cofig file to instantiate the datamodule.
+Similarly, to add a new model to work with [src/traintest.py](src/traintest.py), you need to add a new model class that inherits from the `BaseModel` class and a corresponding config (yaml) file to instantiate the model class.

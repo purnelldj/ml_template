@@ -1,0 +1,9 @@
+_target_: datamodules.EuroSAT_RGB_Samples.EUsatrgbDM
+batch_size: 50
+dims:
+  height: 64
+  width: 64
+test_size: 0.2
+val_size: 0.2
+seed: 14
+normalize: True
