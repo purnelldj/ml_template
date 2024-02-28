@@ -1,6 +1,0 @@
-_target_: wandb.init
-project: ${project_name}
-group: ${group_name}
-id: TEST
-entity:
-mode: online

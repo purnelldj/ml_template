@@ -8,12 +8,7 @@ dirs:
 dims:
   height: 512
   width: 512
-features:
-  f1:
-    scale: 1
-    adj: 0
-files:
-  trainval:
-    - None
-  test:
-    - None
+test_size: 0.2
+val_size: 0.2
+seed: 14
+normalize: True

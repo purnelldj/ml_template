@@ -1,38 +1,31 @@
 defaults:
-  - model: unet
-  - dataset: waterbodies
-  - wandb_init: defaults
+  - model: cnn
+  - datamodule: EuroSAT_RGB_Samples
+  - logger: wandb
+  - trainer: default
   - _self_ # as last argument to allow the override of parameters via this main config
-#    Decomment this parameter to get parallel job running
 
+# things to change more often
+seed: 34
 stage: fit
-visualize_data_and_model: True
-save_model: True
-plot_results: True
-output_dir: ${hydra:runtime.cwd}/outputs/
-save_model_path: ${output_dir}saved_models/${dataset_name}_${model_name}_temp.pkl
-load_model_path: ${output_dir}saved_models/${dataset_name}_${model_name}_temp.pkl
-output_dir_plots: ${output_dir}plots/${group_name}/
-# for wandb logging
-log_to_wandb: False
+# ckpt_path: ${output_dir}/saved_runs/best3layer/ckpt.ckpt
+ckpt_path:
+logger:
+  name: cnn3layer_test2
+trainer:
+  max_epochs: 21
+# note max epoch means up to not including
+
+visualize_data: False
+visualize_modelout: False
+
 project_name: ml_template
+output_dir: ${hydra:runtime.cwd}/outputs/
 model_name: ${hydra:runtime.choices.model}
-dataset_name: ${hydra:runtime.choices.dataset}
+logger_name: ${hydra:runtime.choices.logger}
+dataset_name: ${hydra:runtime.choices.datamodule}
 group_name: ${dataset_name}_${model_name}
 
-dataset:
-  dirs:
-    parent: ${hydra:runtime.cwd}/datasets/
-    main: ${dataset.dirs.parent}${dataset_name}/
-  normalize: True
-  test_size: 0.2
-  val_size: 0.2
-  seed: 142
-
-# do not change below
-datamodule_inst:
-  _target_: ${dataset.module}
-  cfg: ${dataset}
-model_inst:
-  _target_: ${model.module}
-  cfg: ${model}
+datamodule:
+  dir_parent: ${hydra:runtime.cwd}/datasets/
+  dir: ${datamodule.dir_parent}${dataset_name}/
