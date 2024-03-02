@@ -1,41 +1,46 @@
-import segmentation_models_pytorch as smp
 import torch
-from omegaconf import DictConfig
-from segmentation_models_pytorch.losses import DiceLoss
+from torchmetrics.classification import BinaryF1Score
 
 from models.base import BaseModel
 
 
 class UNet(BaseModel):
-    def __init__(self, cfg: DictConfig) -> None:
-        super().__init__()
-        self.net = smp.Unet(
-            encoder_name=cfg.ENCODER,
-            encoder_weights=cfg.WEIGHTS,
-            in_channels=3,
-            classes=1,
-            activation=None,
-        )
-        self.hparams.lr = cfg.lr
-        self.hparams.momentum = cfg.momentum
-        self.criterion = DiceLoss(mode="binary")
-        # self.optimizer = torch.optim.SGD(self.parameters(), lr=cfg.LR, momentum=0.9)
-        self.compile = False
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.f1fun = BinaryF1Score()
 
-    def configure_optimizers(self):
-        optimizer = torch.optim.SGD(
-            self.parameters(), lr=self.hparams.lr, momentum=self.hparams.momentum
-        )
-        # optimizer = self.hparams.optimizer(params=self.trainer.model.parameters())
-        if self.hparams.scheduler is not None:
-            scheduler = self.hparams.scheduler(optimizer=optimizer)
-            return {
-                "optimizer": optimizer,
-                "lr_scheduler": {
-                    "scheduler": scheduler,
-                    "monitor": "val/loss",
-                    "interval": "epoch",
-                    "frequency": 1,
-                },
-            }
-        return {"optimizer": optimizer}
+    def logits_to_yhat(self, logits: torch.tensor) -> torch.tensor:
+        return logits
+
+    def end_of_epoch_metrics(
+        self,
+        logits: list[torch.tensor],
+        y: list[torch.tensor],
+        yhat: list[torch.tensor],
+        label: str,
+        wandb_logger: bool = True,
+    ) -> dict:
+        yhat = torch.cat(self.yhat_all)
+        y = torch.cat(self.y_all)
+        f1 = self.f1fun(yhat, y)
+        metrics = {}
+        metrics[f"{label}_fl"] = f1
+        if label == "test":
+            acc = self.accuracy(yhat, y)
+            logits = torch.cat(self.logits_all)
+            loss = self.criterion(logits, y)
+            metrics[f"{label}_acc"] = acc
+            metrics[f"{label}_loss"] = loss
+        self.logger.log_metrics(metrics)
+
+    def on_validation_epoch_end(self) -> None:
+        self.end_of_epoch_metrics(self.logits_all, self.y_all, self.yhat_all, "val")
+
+    def on_test_epoch_end(self) -> None:
+        self.end_of_epoch_metrics(self.logits_all, self.y_all, self.yhat_all, "test")
+
+    def on_train_epoch_end(self) -> None:
+        if self.epoch_counter % 10 == 0:
+            self.end_of_epoch_metrics(
+                self.logits_all, self.y_all, self.yhat_all, "train"
+            )

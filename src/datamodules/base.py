@@ -2,16 +2,15 @@ import logging
 
 import lightning as L
 import torch
-from omegaconf import DictConfig
 from torch.utils.data import DataLoader, Dataset, random_split
 
 
 class BaseDS(Dataset):
     # https://pytorch.org/docs/stable/data.html#torch.utils.data.Dataset
 
-    def __init__(self, cfg: DictConfig) -> None:
+    def __init__(self, **kwargs) -> None:
         super().__init__()
-        self.cfg = cfg
+        pass
 
     def __len__(self) -> int:
         """Return length of dataset."""
@@ -41,9 +40,10 @@ class BaseDM(L.LightningDataModule):
         self.val_size = val_size
         self.seed = seed
         self.batch_size = batch_size
-        self.Dataset = Dataset
         self.dir = dir
         self.log = logging.getLogger(__name__)
+        # now instantiate the dataset
+        self.Dataset = Dataset
 
     def prepare_data(self):
         """For downloading and tokenizing data."""
@@ -52,7 +52,7 @@ class BaseDM(L.LightningDataModule):
     def setup(self, stage: str = "fit"):
         """Perform train/val/test splits, create datasets, apply transforms."""
         # Assign Train/val split(s) for use in Dataloaders
-        xy_full = self.Dataset(self.cfg)
+        xy_full = self.Dataset
         self.xy_train, self.xy_val, self.xy_test = random_split(
             xy_full,
             [1 - self.val_size - self.test_size, self.val_size, self.test_size],

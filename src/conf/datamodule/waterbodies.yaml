@@ -1,14 +1,15 @@
-module: datamodules.waterbodies.WBDM
-# dims per var per file
+_target_: datamodules.waterbodies.WBDM
 batch_size: 12
 mask_ratio: 0.5
-dirs:
-  ims: ${dataset.dirs.main}Images/
-  masks: ${dataset.dirs.main}Masks/
-dims:
-  height: 512
-  width: 512
 test_size: 0.2
 val_size: 0.2
 seed: 14
 normalize: True
+
+# dataset class
+Dataset:
+  _target_: datamodules.waterbodies.WBDS
+  dir_ims: ${datamodule.dir}Images/
+  dir_masks: ${datamodule.dir}Masks/
+  height: 512
+  width: 512
