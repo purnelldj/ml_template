@@ -1,17 +1,20 @@
 _target_: models.unet.UNet
 
 net:
-  _target_:
-  ENCODER: 'resnet50'
-  WEIGHTS: 'imagenet'
+  _target_: segmentation_models_pytorch.Unet
+  encoder_name: 'resnet50'
+  encoder_weights: 'imagenet'
+  in_channels: 3
+  classes: 1
+  activation:
 
 criterion:
-  _target_:
+  _target_: segmentation_models_pytorch.losses.DiceLoss
+  mode: binary
 
 accuracy:
   _target_: torchmetrics.classification.Accuracy
-  task:
-  num_classes:
+  task: binary
 
 optimizer:
   _target_: torch.optim.Adam

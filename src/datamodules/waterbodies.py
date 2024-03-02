@@ -4,8 +4,7 @@ import logging
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
-from omegaconf import DictConfig
-from torch.utils.data import Dataset, random_split
+from torch.utils.data import Dataset
 
 from datamodules.base import BaseDM
 from datamodules.waterbodies_utils import im_mask_transform
@@ -16,12 +15,14 @@ log = logging.getLogger(__name__)
 class WBDS(Dataset):
     # https://pytorch.org/docs/stable/data.html#torch.utils.data.Dataset
 
-    def __init__(self, cfg: DictConfig) -> None:
+    def __init__(
+        self, dir_ims: str, dir_masks: str, height: int, width: int, **kwargs
+    ) -> None:
         super().__init__()
-        self.dir_ims = cfg.dirs.ims
-        self.dir_masks = cfg.dirs.masks
-        self.height = cfg.dims.height
-        self.width = cfg.dims.width
+        self.dir_ims = dir_ims
+        self.dir_masks = dir_masks
+        self.height = height
+        self.width = width
 
         # all files
         ims_all = glob.glob(self.dir_ims + "water_body_*")
@@ -37,35 +38,17 @@ class WBDS(Dataset):
         im, mask = im_mask_transform(
             self.ims_all[idx], self.masks_all[idx], self.height, self.width
         )
+        mask = torch.round(mask)  # some values that arent 1 or 0
         return im, mask
 
 
 class WBDM(BaseDM):
     # https://lightning.ai/docs/pytorch/stable/data/datamodule.html#lightningdatamodule-api
 
-    def __init__(self, cfg: DictConfig):
-        super().__init__(cfg)
+    def __init__(self, mask_ratio: int = 0.5, **kwargs):
+        super().__init__(**kwargs)
         # inherit from class
-        self.mask_ratio = cfg.mask_ratio
-
-    def setup(self, stage: str):
-        # count number of classes
-        # build vocabulary
-        # perform train/val/test splits
-        # create datasets
-        # apply transforms (defined explicitly in your datamodule)
-
-        # Assign Train/val split(s) for use in Dataloaders
-        wb_full = WBDS(self.cfg)
-        self.wb_train, self.wb_val, self.wb_test = random_split(
-            wb_full,
-            [1 - self.val_size - self.test_size, self.val_size, self.test_size],
-            generator=torch.Generator().manual_seed(self.seed),
-        )
-        self.wb_predict = None
-
-        log.info("train / val / test split: ")
-        log.info(f"{len(self.wb_train)} / {len(self.wb_val)} / {len(self.wb_test)}")
+        self.mask_ratio = mask_ratio
 
     def plot_xy(
         self, x: torch.tensor, y: torch.tensor, ypred: torch.tensor = None

@@ -11,9 +11,9 @@ stage: fit
 # ckpt_path: ${output_dir}/saved_runs/best3layer/ckpt.ckpt
 ckpt_path:
 logger:
-  name: cnn3layer_test2
+  name: eusattest
 trainer:
-  max_epochs: 21
+  max_epochs: 6
 # note max epoch means up to not including
 
 visualize_data: False

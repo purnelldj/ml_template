@@ -7,3 +7,8 @@ test_size: 0.2
 val_size: 0.2
 seed: 14
 normalize: True
+
+# dataset class
+Dataset:
+  _target_: datamodules.EuroSAT_RGB_Samples.EUsatrgbDS
+  dir: ${datamodule.dir}

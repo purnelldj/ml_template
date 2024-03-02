@@ -35,13 +35,13 @@ class EUsatrgbDS(Dataset):
 
 class EUsatrgbDM(BaseDM):
     def __init__(self, **kwargs):
-        super().__init__(Dataset=EUsatrgbDS, **kwargs)
+        super().__init__(**kwargs)
         # inherit from class
 
     def setup(self, stage: str = "fit"):
         """Perform train/val/test splits, create datasets, apply transforms."""
         # Assign Train/val split(s) for use in Dataloaders
-        DS = self.Dataset(self.dir)
+        DS = self.Dataset
         indices = range(len(DS))
         trainval_idx, test_idx = train_test_split(
             indices,

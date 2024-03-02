@@ -61,10 +61,9 @@ def main(cfg: DictConfig):
         trainer.test(model=Model, datamodule=DM, ckpt_path=cfg.ckpt_path)
 
 
-def visualize_data_model_fun(
-    DM: BaseDM, Model: BaseModel = None, idx: int = 12
-) -> None:
+def visualize_data_model_fun(DM: BaseDM, Model: BaseModel = None, idx: int = 3) -> None:
     """For checking datamodule and model outputs prior to training."""
+    DM.setup()
     train_dataloader = DM.train_dataloader()
     for x, y in train_dataloader:
         xplot, yplot = x[idx], y[idx]
