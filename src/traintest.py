@@ -1,4 +1,6 @@
+import cProfile
 import logging
+import pstats
 
 import hydra
 import lightning as L
@@ -88,4 +90,8 @@ def visualize_data_model_fun(DM: BaseDM, Model: BaseModel = None, idx: int = 3) 
 
 
 if __name__ == "__main__":
-    main()
+    with cProfile.Profile() as profile:
+        main()
+    results = pstats.Stats(profile)
+    results.sort_stats(pstats.SortKey.TIME)
+    results.print_stats(10)

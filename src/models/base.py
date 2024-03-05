@@ -6,16 +6,9 @@ import torch
 from datamodules.base import BaseDM
 
 """
+taken inspiration from :
 https://lightning.ai/docs/pytorch/stable/common/lightning_module.html#lightningmodule
-A LightningModule organizes your PyTorch code into 6 sections:
-Initialization (__init__ and setup()).
-Train Loop (training_step())
-Validation Loop (validation_step())
-Test Loop (test_step())
-Prediction Loop (predict_step())
-Optimizers and LR Schedulers (configure_optimizers())
-
-also taken inspiration from https://github.com/ashleve/lightning-hydra-template
+https://github.com/ashleve/lightning-hydra-template
 """
 
 
