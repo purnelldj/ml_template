@@ -196,9 +196,10 @@ class CNN4layerLarge2(nn.Module):
 
 
 class CNNModule(BaseModel):
-    def __init__(self, **kwargs):
+    def __init__(self, wandb_plots: bool = True, **kwargs):
         super().__init__(**kwargs)
         self.f1fun = MulticlassF1Score(num_classes=10)
+        self.wandb_plots = wandb_plots
 
     def logits_to_yhat(self, logits: torch.tensor) -> torch.tensor:
         return torch.argmax(logits, dim=1)
@@ -216,7 +217,6 @@ class CNNModule(BaseModel):
         y: list[torch.tensor],
         yhat: list[torch.tensor],
         label: str,
-        wandb_logger: bool = True,
     ) -> dict:
         yhat = torch.cat(self.yhat_all)
         y = torch.cat(self.y_all)
@@ -231,7 +231,7 @@ class CNNModule(BaseModel):
             metrics[f"{label}_acc"] = acc
             metrics[f"{label}_loss"] = loss
         self.logger.log_metrics(metrics)
-        if wandb_logger:
+        if self.wandb_plots:
             confmat = wandb.plot.confusion_matrix(
                 y_true=y,
                 preds=yhat,

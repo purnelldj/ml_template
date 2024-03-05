@@ -1,4 +1,5 @@
 _target_: models.cnn.CNNModule
+wandb_plots: False
 
 net:
   _target_: models.cnn.CNN3layer
