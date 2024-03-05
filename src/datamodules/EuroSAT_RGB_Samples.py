@@ -37,6 +37,9 @@ class EUsatrgbDM(BaseDM):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         # inherit from class
+        for i, class_name in enumerate(class_list()):
+            self.label2id[class_name] = str(i)
+            self.id2label[str(i)] = class_name
 
     def setup(self, stage: str = "fit"):
         """Perform train/val/test splits, create datasets, apply transforms."""

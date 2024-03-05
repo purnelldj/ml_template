@@ -7,6 +7,7 @@ test_size: 0.2
 val_size: 0.2
 seed: 14
 normalize: True
+num_workers: 1
 
 # dataset class
 Dataset:

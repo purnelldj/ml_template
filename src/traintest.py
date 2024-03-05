@@ -40,7 +40,7 @@ def main(cfg: DictConfig):
         return
 
     # get model: either instantiate or load saved model
-    Model: BaseModel = instantiate(cfg.model)
+    Model: BaseModel = instantiate(cfg.model, DM=DM)
     log.info(f"model hparams: \n {Model.hparams}")
     log.info(Model)
 

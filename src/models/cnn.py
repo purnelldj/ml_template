@@ -233,8 +233,10 @@ class CNNModule(BaseModel):
         self.logger.log_metrics(metrics)
         if wandb_logger:
             confmat = wandb.plot.confusion_matrix(
-                y_true=y.numpy(),
-                preds=yhat.numpy(),
+                y_true=y,
+                preds=yhat,
+                # y_true=y.numpy(),
+                # preds=yhat.numpy(),
                 class_names=class_list(),
                 title=f"{label}_confmat",
             )

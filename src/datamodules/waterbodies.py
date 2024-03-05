@@ -27,8 +27,8 @@ class WBDS(Dataset):
         # all files
         ims_all = glob.glob(self.dir_ims + "water_body_*")
         masks_all = glob.glob(self.dir_masks + "water_body_*")
-        self.ims_all = np.array(ims_all)
-        self.masks_all = np.array(masks_all)
+        self.ims_all = np.sort(np.array(ims_all))
+        self.masks_all = np.sort(np.array(masks_all))
         assert len(ims_all) == len(masks_all)
 
     def __len__(self) -> int:

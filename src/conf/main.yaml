@@ -1,5 +1,5 @@
 defaults:
-  - model: cnn
+  - model: vitmae
   - datamodule: EuroSAT_RGB_Samples
   - logger: wandb
   - trainer: default
@@ -11,7 +11,7 @@ stage: fit
 # ckpt_path: ${output_dir}/saved_runs/best3layer/ckpt.ckpt
 ckpt_path:
 logger:
-  name: eusattest
+  name: nworkerst
 trainer:
   max_epochs: 6
 # note max epoch means up to not including

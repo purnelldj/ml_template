@@ -3,6 +3,8 @@ from typing import Tuple
 import lightning as L
 import torch
 
+from datamodules.base import BaseDM
+
 """
 https://lightning.ai/docs/pytorch/stable/common/lightning_module.html#lightningmodule
 A LightningModule organizes your PyTorch code into 6 sections:
@@ -26,6 +28,7 @@ class BaseModel(L.LightningModule):
         accuracy,
         scheduler: torch.optim.lr_scheduler = None,
         compile: bool = False,
+        DM: BaseDM = None,
     ) -> None:
         super().__init__()
 
@@ -120,4 +123,4 @@ class BaseModel(L.LightningModule):
         return optimizer
 
     def logits_to_yhat(self, logits: torch.tensor) -> torch.tensor:
-        pass
+        return logits

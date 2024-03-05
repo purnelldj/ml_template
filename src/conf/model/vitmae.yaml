@@ -1,0 +1,18 @@
+_target_: models.vitmae.ViTMAEmodule
+
+net:
+#  _target_: models.vitmae.ViTMAE
+
+criterion:
+  _target_: torch.nn.CrossEntropyLoss
+
+accuracy:
+  _target_: torchmetrics.classification.Accuracy
+  task: multiclass
+  num_classes: 10
+
+optimizer:
+  _target_: torch.optim.Adam
+  _partial_: true
+  lr: 1e-3
+  # weight_decay: 0.9
