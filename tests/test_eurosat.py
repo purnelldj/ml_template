@@ -16,11 +16,11 @@ def test_file_to_class():
 
 def test_file_to_im():
     im = file_to_im("tests/test_data/AnnualCrop_155.jpg")
-    assert im.shape == torch.Size([3, 64, 64])
+    assert im.shape == torch.Size([3, 224, 224])
     assert im.max().numpy() <= 1
     assert im.min().numpy() >= 0
     im = file_to_im("tests/test_data/River_143.jpg")
-    assert im.shape == torch.Size([3, 64, 64])
+    assert im.shape == torch.Size([3, 224, 224])
     assert im.max().numpy() <= 1
     assert im.min().numpy() >= 0
 
