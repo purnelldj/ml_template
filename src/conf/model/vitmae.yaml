@@ -1,5 +1,6 @@
 _target_: models.vitmae.ViTMAEmodule
 wandb_plots: False
+# num_labels: 10
 
 net:
   _target_: transformers.ViTForImageClassification.from_pretrained

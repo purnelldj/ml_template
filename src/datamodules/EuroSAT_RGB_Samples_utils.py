@@ -1,10 +1,11 @@
 import glob
 from pathlib import Path
 
-import albumentations as A
 import numpy as np
 import torch
 from PIL import Image
+
+from utils import im_resize
 
 
 def list_files(dir: str) -> list[str]:
@@ -35,19 +36,13 @@ def class_list() -> list[str]:
 
 
 def file_to_im(
-    file: str, height: int = 224, width: int = 224, **kwargs
+    file: str, im_height: int = 224, im_width: int = 224, im_channels: int = 3, **kwargs
 ) -> torch.tensor:
     """Transform jpeg to Tensor."""
     im = np.array(Image.open(file)).astype(np.float32)
-    transform = A.Compose(
-        [
-            A.Resize(height, width),
-            A.HorizontalFlip(),
-        ]
-    )
-    transformed = transform(image=im)
-    im = transformed["image"]
-    assert im.shape == (224, 224, 3)
+    if im.shape[0] != im_height or im.shape[1] != im_width:
+        im = im_resize(im, im_height, im_width)
+    assert im.shape == (im_height, im_width, im_channels)
     im /= 255.0
     im = np.transpose(im, (2, 0, 1))
     return torch.tensor(im)
