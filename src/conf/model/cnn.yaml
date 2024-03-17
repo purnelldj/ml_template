@@ -1,5 +1,17 @@
-_target_: models.cnn.CNNModule
+_target_: models.base.MultiClass
 wandb_plots: False
+class_list: [
+  "AnnualCrop",
+  "Forest",
+  "HerbaceousVegetation",
+  "Highway",
+  "Industrial",
+  "Pasture",
+  "PermanentCrop",
+  "Residential",
+  "River",
+  "SeaLake",
+]
 
 net:
   _target_: models.cnn.CNN3layer

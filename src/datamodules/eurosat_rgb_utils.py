@@ -9,7 +9,7 @@ from utils import im_resize
 
 
 def list_files(dir: str) -> list[str]:
-    """List images in 'EuroSAT_RGB_Samples' dir."""
+    """List images in 'eurosat_rgb' dir."""
     subdirs = glob.glob(dir + "*")
     assert len(subdirs) == 10
     files = []

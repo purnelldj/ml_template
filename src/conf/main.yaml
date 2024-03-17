@@ -1,17 +1,17 @@
 defaults:
   - model: vitmae
-  - datamodule: EuroSAT_RGB_Samples
+  - datamodule: eurosat_rgb
   - logger: wandb
   - trainer: default
   - _self_ # as last argument to allow the override of parameters via this main config
 
 # things to change more often
-seed: 34
+seed: 33
 stage: fit
 # ckpt_path: ${output_dir}/saved_runs/best3layer/ckpt.ckpt
 ckpt_path:
 logger:
-  name: nworkerst
+  name:
 trainer:
   max_epochs: 6
 # note max epoch means up to not including

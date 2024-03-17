@@ -7,7 +7,7 @@
 │   │   ├───trainer
 │   │   └───main.yaml
 │   ├───datamodules
-│   │   └───EuroSAT_RGB_Samples.py
+│   │   └───eurosat_rgb.py
 │   ├───models
 │   │   └───cnn.py
 │   └───traintest.py

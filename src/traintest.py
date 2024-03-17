@@ -19,7 +19,9 @@ from utils import save_hydra_config_to_wandb
 def main(cfg: DictConfig):
     if cfg.logger_name == "wandb":
         logp = cfg.logger
-        wandb.init(name=logp.name, group=logp.group, project=logp.project)
+        wandb.init(
+            name=logp.name, group=logp.group, project=logp.project, mode=logp.mode
+        )
         save_hydra_config_to_wandb(cfg)
 
     # config logging

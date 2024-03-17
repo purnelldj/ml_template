@@ -1,14 +1,14 @@
 import torch
 
-from datamodules.EuroSAT_RGB_Samples_utils import file_to_class, file_to_im
+from datamodules.eurosat_rgb_utils import file_to_class, file_to_im
 
 
 def test_file_to_class():
-    file = "EuroSAT_RGB_Samples/SeaLake_Samples/SeaLake_995.jpg"
+    file = "eurosat_rgb/SeaLake_Samples/SeaLake_995.jpg"
     class_true = "SeaLake"
     class_test = file_to_class(file)
     assert class_true == class_test
-    file = "EuroSAT_RGB_Samples/Forest_Samples/Forest_71.jpg"
+    file = "eurosat_rgb/Forest_Samples/Forest_71.jpg"
     class_true = "Forest"
     class_test = file_to_class(file)
     assert class_true == class_test

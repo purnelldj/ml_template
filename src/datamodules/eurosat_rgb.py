@@ -5,7 +5,7 @@ from sklearn.model_selection import train_test_split
 from torch.utils.data import Dataset, Subset
 
 from datamodules.base import BaseDM
-from datamodules.EuroSAT_RGB_Samples_utils import (
+from datamodules.eurosat_rgb_utils import (
     class_list,
     file_to_class,
     file_to_class_ind,
@@ -88,4 +88,3 @@ class EUsatrgbDM(BaseDM):
             title += f", pred class = {class_pred}"
         ax.set_title(title)
         plt.show()
-        plt.close()
