@@ -1,4 +1,4 @@
-_target_: models.base.MultiClass
+_target_: models.vitmae.ViTMAEmodule
 wandb_plots: False
 class_list: [
   "AnnualCrop",
@@ -14,7 +14,6 @@ class_list: [
 ]
 
 net:
-  _target_: models.cnn.CNN3layer
 
 criterion:
   _target_: torch.nn.CrossEntropyLoss

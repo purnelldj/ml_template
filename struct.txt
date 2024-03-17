@@ -1,0 +1,14 @@
+├───datasets
+├───src
+│   ├───conf
+│   │   ├───datamodule
+│   │   ├───logger
+│   │   ├───model
+│   │   ├───trainer
+│   │   └───main.yaml
+│   ├───datamodules
+│   │   └───eurosat_rgb.py
+│   ├───models
+│   │   └───cnn.py
+│   └───traintest.py
+├───tests

@@ -3,4 +3,4 @@ _target_: lightning.pytorch.loggers.WandbLogger
 project: ${project_name}
 group: ${group_name}
 save_dir: ${output_dir}
-online: True
+mode: offline

@@ -1,4 +1,6 @@
+import cProfile
 import logging
+import pstats
 
 import hydra
 import lightning as L
@@ -17,7 +19,9 @@ from utils import save_hydra_config_to_wandb
 def main(cfg: DictConfig):
     if cfg.logger_name == "wandb":
         logp = cfg.logger
-        wandb.init(name=logp.name, group=logp.group, project=logp.project)
+        wandb.init(
+            name=logp.name, group=logp.group, project=logp.project, mode=logp.mode
+        )
         save_hydra_config_to_wandb(cfg)
 
     # config logging
@@ -40,7 +44,7 @@ def main(cfg: DictConfig):
         return
 
     # get model: either instantiate or load saved model
-    Model: BaseModel = instantiate(cfg.model)
+    Model: BaseModel = instantiate(cfg.model, DM=DM)
     log.info(f"model hparams: \n {Model.hparams}")
     log.info(Model)
 
@@ -88,4 +92,8 @@ def visualize_data_model_fun(DM: BaseDM, Model: BaseModel = None, idx: int = 3) 
 
 
 if __name__ == "__main__":
-    main()
+    with cProfile.Profile() as profile:
+        main()
+    results = pstats.Stats(profile)
+    results.sort_stats(pstats.SortKey.TIME)
+    results.print_stats(10)

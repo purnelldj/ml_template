@@ -1,0 +1,15 @@
+_target_: datamodules.eurosat_rgb.EUsatrgbDM
+batch_size: 12
+test_size: 0.2
+val_size: 0.2
+seed: 15
+normalize: True
+# num_workers: 1
+
+# dataset class
+Dataset:
+  _target_: datamodules.eurosat_rgb.EUsatrgbDS
+  dir: ${datamodule.dir}
+  im_height: 64
+  im_width: 64
+  im_channels: 3

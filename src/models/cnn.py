@@ -1,11 +1,6 @@
 import torch
 import torch.nn.functional as F
 from torch import nn
-from torchmetrics.classification import MulticlassF1Score
-
-import wandb
-from datamodules.EuroSAT_RGB_Samples_utils import class_list
-from models.base import BaseModel
 
 
 class CNN2layer(nn.Module):
@@ -193,78 +188,3 @@ class CNN4layerLarge2(nn.Module):
         x = torch.flatten(x, 1)  # flatten all dimensions except batch
         x = self.fc1(x)
         return x
-
-
-class CNNModule(BaseModel):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.f1fun = MulticlassF1Score(num_classes=10)
-
-    def logits_to_yhat(self, logits: torch.tensor) -> torch.tensor:
-        return torch.argmax(logits, dim=1)
-
-    def count_classes(self, y: torch.tensor, label: str) -> dict:
-        """Count num el in each class."""
-        counter = {}
-        for idx, classn in enumerate(class_list()):
-            counter[f"{classn}"] = torch.sum(y == idx)
-        return counter
-
-    def end_of_epoch_metrics(
-        self,
-        logits: list[torch.tensor],
-        y: list[torch.tensor],
-        yhat: list[torch.tensor],
-        label: str,
-        wandb_logger: bool = True,
-    ) -> dict:
-        yhat = torch.cat(self.yhat_all)
-        y = torch.cat(self.y_all)
-        f1 = self.f1fun(yhat, y)
-        counter = self.count_classes(yhat, label)
-        metrics = {}
-        metrics[f"{label}_fl"] = f1
-        if label == "test":
-            acc = self.accuracy(yhat, y)
-            logits = torch.cat(self.logits_all)
-            loss = self.criterion(logits, y)
-            metrics[f"{label}_acc"] = acc
-            metrics[f"{label}_loss"] = loss
-        self.logger.log_metrics(metrics)
-        if wandb_logger:
-            confmat = wandb.plot.confusion_matrix(
-                y_true=y.numpy(),
-                preds=yhat.numpy(),
-                class_names=class_list(),
-                title=f"{label}_confmat",
-            )
-            wandb.log({f"{label}_conf_mat": confmat})
-            data = [[key, int(counter[key].numpy())] for key in counter]
-            table = wandb.Table(data=data, columns=["class", "count"])
-            wandb.log(
-                {
-                    f"{label}_class_counter": wandb.plot.bar(
-                        table, "class", "count", title=f"{label}_class_counter"
-                    )
-                }
-            )
-
-    def on_validation_epoch_end(self) -> None:
-        self.end_of_epoch_metrics(self.logits_all, self.y_all, self.yhat_all, "val")
-
-    def on_test_epoch_end(self) -> None:
-        self.end_of_epoch_metrics(self.logits_all, self.y_all, self.yhat_all, "test")
-
-    def on_train_epoch_end(self) -> None:
-        if self.epoch_counter % 10 == 0:
-            self.end_of_epoch_metrics(
-                self.logits_all, self.y_all, self.yhat_all, "train"
-            )
-
-
-if __name__ == "__main__":
-    net = CNN4layerLarge2()
-    tt = torch.rand(1, 3, 64, 64)
-    logits = net(tt)
-    print(logits.shape)
-    pass

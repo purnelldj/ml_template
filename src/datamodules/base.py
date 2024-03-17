@@ -32,6 +32,7 @@ class BaseDM(L.LightningDataModule):
         batch_size: int = 12,
         dir: str = None,
         Dataset: Dataset = None,
+        num_workers: int = 1,
         **kwargs,
     ):
         super().__init__()
@@ -44,6 +45,9 @@ class BaseDM(L.LightningDataModule):
         self.log = logging.getLogger(__name__)
         # now instantiate the dataset
         self.Dataset = Dataset
+        self.label2id = {}
+        self.id2label = {}
+        self.num_workers = num_workers
 
     def prepare_data(self):
         """For downloading and tokenizing data."""
@@ -66,13 +70,19 @@ class BaseDM(L.LightningDataModule):
         )
 
     def train_dataloader(self, **kwargs):
-        return DataLoader(self.xy_train, batch_size=self.batch_size, **kwargs)
+        return DataLoader(
+            self.xy_train, batch_size=self.batch_size, num_workers=self.num_workers
+        )
 
     def val_dataloader(self, **kwargs):
-        return DataLoader(self.xy_val, batch_size=self.batch_size, **kwargs)
+        return DataLoader(
+            self.xy_val, batch_size=self.batch_size, num_workers=self.num_workers
+        )
 
     def test_dataloader(self, **kwargs):
-        return DataLoader(self.xy_test, batch_size=self.batch_size, **kwargs)
+        return DataLoader(
+            self.xy_test, batch_size=self.batch_size, num_workers=self.num_workers
+        )
 
     def predict_dataloader(self):
         # this is for unlabeled data

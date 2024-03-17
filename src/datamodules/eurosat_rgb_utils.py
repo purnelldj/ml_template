@@ -5,9 +5,11 @@ import numpy as np
 import torch
 from PIL import Image
 
+from utils import im_resize
+
 
 def list_files(dir: str) -> list[str]:
-    """List images in 'EuroSAT_RGB_Samples' dir."""
+    """List images in 'eurosat_rgb' dir."""
     subdirs = glob.glob(dir + "*")
     assert len(subdirs) == 10
     files = []
@@ -33,10 +35,14 @@ def class_list() -> list[str]:
     return all_classes
 
 
-def file_to_im(file: str) -> torch.tensor:
+def file_to_im(
+    file: str, im_height: int = 224, im_width: int = 224, im_channels: int = 3, **kwargs
+) -> torch.tensor:
     """Transform jpeg to Tensor."""
     im = np.array(Image.open(file)).astype(np.float32)
-    assert im.shape == (64, 64, 3)
+    if im.shape[0] != im_height or im.shape[1] != im_width:
+        im = im_resize(im, im_height, im_width)
+    assert im.shape == (im_height, im_width, im_channels)
     im /= 255.0
     im = np.transpose(im, (2, 0, 1))
     return torch.tensor(im)
