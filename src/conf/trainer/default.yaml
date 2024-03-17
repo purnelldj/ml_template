@@ -5,7 +5,7 @@ default_root_dir: ${output_dir}
 min_epochs: 1 # prevents early stopping
 # max_epochs: 50
 
-accelerator: cpu
+# accelerator: cpu
 devices: 1
 
 # mixed precision for extra speed-up

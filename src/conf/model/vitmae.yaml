@@ -1,13 +1,19 @@
 _target_: models.vitmae.ViTMAEmodule
 wandb_plots: False
-# num_labels: 10
+class_list: [
+  "AnnualCrop",
+  "Forest",
+  "HerbaceousVegetation",
+  "Highway",
+  "Industrial",
+  "Pasture",
+  "PermanentCrop",
+  "Residential",
+  "River",
+  "SeaLake",
+]
 
 net:
-#net:
-#  _target_: transformers.ViTForImageClassification.from_pretrained
-#  pretrained_model_name_or_path: "google/vit-base-patch16-224"
-#  num_labels: 10
-#  ignore_mismatched_sizes: True
 
 criterion:
   _target_: torch.nn.CrossEntropyLoss
