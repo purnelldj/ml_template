@@ -47,5 +47,5 @@ then the config file and results will be uploaded to wandb for every run
 
 ## adding additional models / datasets
 
-By default, data should be stored in the directory [datasets](). If you would like to add a new dataset, you need to add a new data module that inherits from the `BaseDM` class and a new cofig file to instantiate the datamodule.
+By default, data should be stored in a directory `ml_template/datasets`. If you would like to add a new dataset, you need to add a new data module that inherits from the `BaseDM` class and a new cofig file to instantiate the datamodule.
 Similarly, to add a new model to work with [src/traintest.py](src/traintest.py), you need to add a new model class that inherits from the `BaseModel` class and a corresponding config (yaml) file to instantiate the model class.

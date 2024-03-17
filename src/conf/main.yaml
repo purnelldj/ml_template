@@ -1,6 +1,6 @@
 defaults:
   - model: vitmae
-  - datamodule: eurosat_rgb
+  - dataset: eurosat_rgb
   - logger: wandb
   - trainer: default
   - _self_ # as last argument to allow the override of parameters via this main config
@@ -23,9 +23,9 @@ project_name: ml_template
 output_dir: ${hydra:runtime.cwd}/outputs/
 model_name: ${hydra:runtime.choices.model}
 logger_name: ${hydra:runtime.choices.logger}
-dataset_name: ${hydra:runtime.choices.datamodule}
+dataset_name: ${hydra:runtime.choices.dataset}
 group_name: ${dataset_name}_${model_name}
 
-datamodule:
+dataset:
   dir_parent: ${hydra:runtime.cwd}/datasets/
-  dir: ${datamodule.dir_parent}${dataset_name}/
+  dir: ${dataset.dir_parent}${dataset_name}/

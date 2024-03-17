@@ -35,7 +35,7 @@ def main(cfg: DictConfig):
     L.seed_everything(cfg.seed, workers=True)
 
     # get datamodule
-    DM: BaseDM = instantiate(cfg.datamodule)
+    DM: BaseDM = instantiate(cfg.dataset)
     log.info("successfully instantiated the datamodule")
 
     # visualize datamodule output
@@ -80,6 +80,8 @@ def visualize_data_model_fun(DM: BaseDM, Model: BaseModel = None, idx: int = 3) 
                 print("issue running model")
                 raise e
             logits.detach()
+            print(f"output logits are of type: {type(logits)}")
+            print(f"and size: {logits.shape}")
             loss = Model.criterion(logits, y)
             acc = Model.accuracy(logits, y)
             print(f"testing loss: {loss}")
