@@ -1,5 +1,5 @@
 defaults:
-  - model: vitmae
+  - model: resnet
   - dataset: eurosat_rgb
   - logger: wandb
   - trainer: default
@@ -13,7 +13,7 @@ ckpt_path:
 logger:
   name:
 trainer:
-  max_epochs: 6
+  max_epochs: 5
 # note max epoch means up to not including
 
 visualize_data: False

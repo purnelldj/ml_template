@@ -2,6 +2,12 @@
 
 template for ML projects
 
+## google colab
+
+see the [notebook](ml_template_notebook.ipynb) for examples of image classification and segmentation tasks using Sentinel-2 datasets
+
+note: you do not need to worry about initializing repository, installation if you are using the notebook on colab, you can follow the instructions in the notebook
+
 ## initializing repository
 
 search all references of `ml_template` and change it to the desired repo name.

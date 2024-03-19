@@ -16,7 +16,6 @@ def im_resize(im: np.ndarray, im_height: int = 224, im_width: int = 224) -> np.n
     transform = A.Compose(
         [
             A.Resize(im_height, im_width),
-            A.HorizontalFlip(),
         ]
     )
     transformed = transform(image=im)

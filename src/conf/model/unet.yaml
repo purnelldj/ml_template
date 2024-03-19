@@ -1,12 +1,13 @@
-_target_: models.unet.UNet
+_target_: models.base.BinaryClass
 
 net:
   _target_: segmentation_models_pytorch.Unet
-  encoder_name: 'resnet50'
-  encoder_weights: 'imagenet'
+  # encoder_name: 'resnet50'
+  encoder_name: mobilenet_v2
+  encoder_weights: imagenet
   in_channels: 3
   classes: 1
-  activation:
+  activation: sigmoid
 
 criterion:
   _target_: segmentation_models_pytorch.losses.DiceLoss

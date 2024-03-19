@@ -46,7 +46,7 @@ def main(cfg: DictConfig):
     # get model: either instantiate or load saved model
     Model: BaseModel = instantiate(cfg.model, DM=DM)
     log.info(f"model hparams: \n {Model.hparams}")
-    log.info(Model)
+    # log.info(Model)
 
     # visualize datamodule and model outputs
     if cfg.visualize_modelout:
@@ -63,6 +63,9 @@ def main(cfg: DictConfig):
     if cfg.stage == "test":
         log.info("testing model...")
         trainer.test(model=Model, datamodule=DM, ckpt_path=cfg.ckpt_path)
+
+    if cfg.logger_name == "wandb":
+        wandb.finish()
 
 
 def visualize_data_model_fun(DM: BaseDM, Model: BaseModel = None, idx: int = 3) -> None:
@@ -82,11 +85,12 @@ def visualize_data_model_fun(DM: BaseDM, Model: BaseModel = None, idx: int = 3) 
             logits.detach()
             print(f"output logits are of type: {type(logits)}")
             print(f"and size: {logits.shape}")
+            yhat = Model.logits_to_yhat(logits)
             loss = Model.criterion(logits, y)
-            acc = Model.accuracy(logits, y)
+            acc = Model.accuracy(yhat, y)
             print(f"testing loss: {loss}")
             print(f"testing accuracy: {acc}")
-            ypredplot = logits[idx]
+            ypredplot = yhat[idx]
             DM.plot_xy(xplot, yplot, ypredplot)
         else:
             DM.plot_xy(xplot, yplot)
@@ -94,8 +98,13 @@ def visualize_data_model_fun(DM: BaseDM, Model: BaseModel = None, idx: int = 3) 
 
 
 if __name__ == "__main__":
-    with cProfile.Profile() as profile:
+    profiler = False
+    if profiler:
+        # if you want to search for bottlenecks:
+        with cProfile.Profile() as profile:
+            main()
+        results = pstats.Stats(profile)
+        results.sort_stats(pstats.SortKey.TIME)
+        results.print_stats(10)
+    else:
         main()
-    results = pstats.Stats(profile)
-    results.sort_stats(pstats.SortKey.TIME)
-    results.print_stats(10)
