@@ -2,7 +2,8 @@ from typing import Tuple
 
 import lightning as L
 import torch
-from torchmetrics.classification import MulticlassF1Score
+from torch import Tensor
+from torchmetrics.classification import BinaryF1Score, MulticlassF1Score
 
 import wandb
 from datamodules.base import BaseDM
@@ -24,6 +25,7 @@ class BaseModel(L.LightningModule):
         scheduler: torch.optim.lr_scheduler = None,
         compile: bool = False,
         DM: BaseDM = None,
+        checkpoint_path: str = None,
     ) -> None:
         super().__init__()
 
@@ -38,13 +40,15 @@ class BaseModel(L.LightningModule):
 
         self.epoch_counter = 0
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
+    def forward(self, x: Tensor) -> Tensor:
         """Perform a forward pass through the model `self.net`."""
         return self.net(x)
 
-    def training_step(
-        self, batch: Tuple[torch.Tensor, torch.Tensor], batch_idx: int
-    ) -> torch.Tensor:
+    def predict_step(self, batch, batch_idx):
+        x, y = batch
+        return self(x)
+
+    def training_step(self, batch: Tuple[Tensor, Tensor], batch_idx: int) -> Tensor:
         """Perform a single training step on a batch of data from the training set."""
         x, y = batch
         loss = self.trainval_log_step(x, y, "train")
@@ -63,7 +67,7 @@ class BaseModel(L.LightningModule):
         self.y_all.append(y)
         self.yhat_all.append(yhat)
 
-    def trainval_log_step(self, x: torch.tensor, y: torch.tensor, train_or_val: str):
+    def trainval_log_step(self, x: Tensor, y: Tensor, train_or_val: str):
         logits = self(x)
         yhat = self.logits_to_yhat(logits)
         loss = self.criterion(logits, y)
@@ -117,7 +121,7 @@ class BaseModel(L.LightningModule):
         optimizer = self.hparams.optimizer(params=self.parameters())
         return optimizer
 
-    def logits_to_yhat(self, logits: torch.tensor) -> torch.tensor:
+    def logits_to_yhat(self, logits: Tensor) -> Tensor:
         return logits
 
 
@@ -131,10 +135,10 @@ class MultiClass(BaseModel):
         self.wandb_plots = wandb_plots
         self.class_list = class_list
 
-    def logits_to_yhat(self, logits: torch.tensor) -> torch.tensor:
+    def logits_to_yhat(self, logits: Tensor) -> Tensor:
         return torch.argmax(logits, dim=1)
 
-    def count_classes(self, y: torch.tensor, label: str) -> dict:
+    def count_classes(self, y: Tensor, label: str) -> dict:
         """Count num el in each class."""
         counter = {}
         for idx, classn in enumerate(self.class_list):
@@ -143,9 +147,9 @@ class MultiClass(BaseModel):
 
     def end_of_epoch_metrics(
         self,
-        logits: list[torch.tensor],
-        y: list[torch.tensor],
-        yhat: list[torch.tensor],
+        logits: list[Tensor],
+        y: list[Tensor],
+        yhat: list[Tensor],
         label: str,
     ) -> dict:
         yhat = torch.cat(self.yhat_all)
@@ -162,16 +166,16 @@ class MultiClass(BaseModel):
             metrics[f"{label}_loss"] = loss
         self.logger.log_metrics(metrics)
         if self.wandb_plots:
+            y_true = [yt.item() for yt in y]
+            preds = [predt.item() for predt in yhat]
             confmat = wandb.plot.confusion_matrix(
-                y_true=y,
-                preds=yhat,
-                # y_true=y.numpy(),
-                # preds=yhat.numpy(),
+                y_true=y_true,
+                preds=preds,
                 class_names=self.class_list,
                 title=f"{label}_confmat",
             )
             wandb.log({f"{label}_conf_mat": confmat})
-            data = [[key, int(counter[key].numpy())] for key in counter]
+            data = [[key, int(counter[key].item())] for key in counter]
             table = wandb.Table(data=data, columns=["class", "count"])
             wandb.log(
                 {
@@ -180,6 +184,48 @@ class MultiClass(BaseModel):
                     )
                 }
             )
+
+    def on_validation_epoch_end(self) -> None:
+        self.end_of_epoch_metrics(self.logits_all, self.y_all, self.yhat_all, "val")
+
+    def on_test_epoch_end(self) -> None:
+        self.end_of_epoch_metrics(self.logits_all, self.y_all, self.yhat_all, "test")
+
+    def on_train_epoch_end(self) -> None:
+        if self.epoch_counter % 10 == 0:
+            self.end_of_epoch_metrics(
+                self.logits_all, self.y_all, self.yhat_all, "train"
+            )
+
+
+class BinaryClass(BaseModel):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.f1fun = BinaryF1Score()
+
+    def logits_to_yhat(self, logits: Tensor) -> Tensor:
+        return torch.round(logits)
+
+    def end_of_epoch_metrics(
+        self,
+        logits: list[Tensor],
+        y: list[Tensor],
+        yhat: list[Tensor],
+        label: str,
+        wandb_logger: bool = True,
+    ) -> dict:
+        yhat = torch.cat(self.yhat_all)
+        y = torch.cat(self.y_all)
+        f1 = self.f1fun(yhat, y)
+        metrics = {}
+        metrics[f"{label}_fl"] = f1
+        if label == "test":
+            acc = self.accuracy(yhat, y)
+            logits = torch.cat(self.logits_all)
+            loss = self.criterion(logits, y)
+            metrics[f"{label}_acc"] = acc
+            metrics[f"{label}_loss"] = loss
+        self.logger.log_metrics(metrics)
 
     def on_validation_epoch_end(self) -> None:
         self.end_of_epoch_metrics(self.logits_all, self.y_all, self.yhat_all, "val")

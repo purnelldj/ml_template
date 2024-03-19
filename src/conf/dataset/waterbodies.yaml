@@ -9,7 +9,7 @@ normalize: True
 # dataset class
 Dataset:
   _target_: datamodules.waterbodies.WBDS
-  dir_ims: ${datamodule.dir}Images/
-  dir_masks: ${datamodule.dir}Masks/
+  dir_ims: ${dataset.dir}Images/
+  dir_masks: ${dataset.dir}Masks/
   height: 512
   width: 512

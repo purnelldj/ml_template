@@ -7,8 +7,10 @@
 │   │   ├───trainer
 │   │   └───main.yaml
 │   ├───datamodules
-│   │   └───eurosat_rgb.py
+│   │   ├───eurosat_rgb.py
+│   │   └───...
 │   ├───models
-│   │   └───cnn.py
+│   │   ├───resnet.py
+│   │   └───...
 │   └───traintest.py
 ├───tests

@@ -5,6 +5,7 @@ from pathlib import Path
 import albumentations as A
 import matplotlib.pyplot as plt
 import numpy as np
+from hydra.utils import instantiate
 from omegaconf import DictConfig, OmegaConf
 
 import wandb
@@ -12,11 +13,20 @@ import wandb
 log = logging.getLogger(__name__)
 
 
+def instantaite_model_from_ckpt(cfg: DictConfig, ckpt_path: str = None):
+    if ckpt_path is None:
+        Model = instantiate(cfg)
+    else:
+        cfg_ckpt = cfg
+        cfg_ckpt["_target_"] = cfg._target_ + ".load_from_checkpoint"
+        Model = instantiate(cfg_ckpt)
+    return Model
+
+
 def im_resize(im: np.ndarray, im_height: int = 224, im_width: int = 224) -> np.ndarray:
     transform = A.Compose(
         [
             A.Resize(im_height, im_width),
-            A.HorizontalFlip(),
         ]
     )
     transformed = transform(image=im)
@@ -34,7 +44,7 @@ def save_hydra_config_to_wandb(cfg: DictConfig):
     wandb.save(os.path.join(wandb.run.dir, "hydra_config.yaml"))
 
 
-def saveFig(figName, **kwargs):
+def save_fig(figName, **kwargs):
     figOutDir = ""
     if "figOutDir" in kwargs:
         figOutDir = kwargs.get("figOutDir")

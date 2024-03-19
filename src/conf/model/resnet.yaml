@@ -1,0 +1,32 @@
+_target_: models.resnet.ResNet
+wandb_plots: False
+class_list: [
+  "AnnualCrop",
+  "Forest",
+  "HerbaceousVegetation",
+  "Highway",
+  "Industrial",
+  "Pasture",
+  "PermanentCrop",
+  "Residential",
+  "River",
+  "SeaLake",
+]
+resnet_size: 18
+num_classes: 10
+
+net:
+
+criterion:
+  _target_: torch.nn.CrossEntropyLoss
+
+accuracy:
+  _target_: torchmetrics.classification.Accuracy
+  task: multiclass
+  num_classes: 10
+
+optimizer:
+  _target_: torch.optim.Adam
+  _partial_: true
+  lr: 1e-3
+  # weight_decay: 0.9
