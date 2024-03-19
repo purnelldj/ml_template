@@ -6,11 +6,7 @@ template for ML projects
 
 see the [notebook](ml_template_notebook.ipynb) for examples of image classification and segmentation tasks using Sentinel-2 datasets
 
-note: you do not need to worry about initializing repository, installation if you are using the notebook on colab, you can follow the instructions in the notebook
-
-## initializing repository
-
-search all references of `ml_template` and change it to the desired repo name.
+note: ignore the instructions for installation below if you are using the notebook on colab, follow the instructions in the notebook
 
 ## installation
 
@@ -22,17 +18,39 @@ source venv/bin/activate
 python -m pip install -e .
 ```
 
+## download data from command line
+
+the waterbodies dataset
+
+```
+pip install gdown
+gdown 1JTLSlcxxCANKs_LKZc0Bx5XBta_3sCDb
+unzip waterbodies.zip
+mkdir datasets
+mv waterbodies datasets/
+rm -r waterbodies.zip
+```
+
+the EuroSAT dataset
+
+```
+gdown 1ci8-w2Y0Z-hZaO-KyS4cFAiHKwfx4MMO
+unzip eurosat_rgb.zip
+mv eurosat_rgb datasets/
+rm -r eurosat_rgb.zip
+```
+
 ## usage
 
 The main entry point is in [src/traintest.py](src/traintest.py), you can use it from the command line by typing
 
 ```
-traintest
+traintest model=resnet dataset=eurosat_rgb
 ```
 or to test
 
 ```
-traintest stage=test ckpt_path=path/to/ckpt.ckpt
+traintest model=resnet dataset=eurosat_rgb stage=test ckpt_path=path/to/ckpt.ckpt
 ```
 you could also change parameters from the command line, for example
 

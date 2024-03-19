@@ -69,5 +69,5 @@ class WBDM(BaseDM):
             ypred = (ypred > self.mask_ratio) * 1.0
             yprednp = np.squeeze(ypred.numpy())
             axarr[2].imshow(yprednp, cmap="gray")
-        plt.show()
-        plt.close()
+        # plt.show()
+        # plt.close()

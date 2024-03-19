@@ -87,4 +87,4 @@ class EUsatrgbDM(BaseDM):
             class_pred = class_list()[np.argmax(ypred.numpy())]
             title += f", pred class = {class_pred}"
         ax.set_title(title)
-        plt.show()
+        # plt.show()

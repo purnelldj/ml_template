@@ -25,6 +25,7 @@ class BaseModel(L.LightningModule):
         scheduler: torch.optim.lr_scheduler = None,
         compile: bool = False,
         DM: BaseDM = None,
+        checkpoint_path: str = None,
     ) -> None:
         super().__init__()
 
@@ -42,6 +43,10 @@ class BaseModel(L.LightningModule):
     def forward(self, x: Tensor) -> Tensor:
         """Perform a forward pass through the model `self.net`."""
         return self.net(x)
+    
+    def predict_step(self, batch, batch_idx):
+        x, y = batch
+        return self(x)
 
     def training_step(self, batch: Tuple[Tensor, Tensor], batch_idx: int) -> Tensor:
         """Perform a single training step on a batch of data from the training set."""

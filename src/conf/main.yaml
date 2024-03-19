@@ -10,6 +10,8 @@ seed: 33
 stage: fit
 # ckpt_path: ${output_dir}/saved_runs/best3layer/ckpt.ckpt
 ckpt_path:
+model:
+  checkpoint_path: ${ckpt_path}
 logger:
   name:
 trainer:
