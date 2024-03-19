@@ -43,7 +43,7 @@ class BaseModel(L.LightningModule):
     def forward(self, x: Tensor) -> Tensor:
         """Perform a forward pass through the model `self.net`."""
         return self.net(x)
-    
+
     def predict_step(self, batch, batch_idx):
         x, y = batch
         return self(x)

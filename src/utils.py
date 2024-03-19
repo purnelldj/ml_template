@@ -5,8 +5,8 @@ from pathlib import Path
 import albumentations as A
 import matplotlib.pyplot as plt
 import numpy as np
-from omegaconf import DictConfig, OmegaConf
 from hydra.utils import instantiate
+from omegaconf import DictConfig, OmegaConf
 
 import wandb
 
@@ -21,7 +21,6 @@ def instantaite_model_from_ckpt(cfg: DictConfig, ckpt_path: str = None):
         cfg_ckpt["_target_"] = cfg._target_ + ".load_from_checkpoint"
         Model = instantiate(cfg_ckpt)
     return Model
-
 
 
 def im_resize(im: np.ndarray, im_height: int = 224, im_width: int = 224) -> np.ndarray:

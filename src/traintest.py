@@ -4,17 +4,17 @@ import pstats
 
 import hydra
 import lightning as L
+import matplotlib.pyplot as plt
 import torch
 from hydra.utils import instantiate
-from lightning.pytorch.loggers.logger import Logger
 from lightning.pytorch import Trainer
+from lightning.pytorch.loggers.logger import Logger
 from omegaconf import DictConfig
-import matplotlib.pyplot as plt
 
 import wandb
 from datamodules.base import BaseDM
 from models.base import BaseModel
-from utils import save_hydra_config_to_wandb, save_fig, instantaite_model_from_ckpt
+from utils import instantaite_model_from_ckpt, save_fig, save_hydra_config_to_wandb
 
 
 @hydra.main(config_path="conf", config_name="main", version_base=None)
@@ -71,7 +71,9 @@ def main(cfg: DictConfig):
         wandb.finish()
 
 
-def visualize_data_model_fun(DM: BaseDM, Model: BaseModel = None, trainer: Trainer = None, idx: int = 5) -> None:
+def visualize_data_model_fun(
+    DM: BaseDM, Model: BaseModel = None, trainer: Trainer = None, idx: int = 5
+) -> None:
     """For checking datamodule and model outputs prior to training."""
     DM.setup()
     subset = torch.utils.data.Subset(DM.xy_train, [*range(12)])
