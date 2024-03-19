@@ -50,21 +50,30 @@ rm -r eurosat_rgb.zip
 
 The main entry point is in [src/traintest.py](src/traintest.py), you can use it from the command line as follows
 
+### train
+
 ```
 traintest model=resnet dataset=eurosat_rgb
 ```
-or to test
+### test
 
 ```
 traintest model=resnet dataset=eurosat_rgb stage=test ckpt_path=path/to/ckpt.ckpt
 ```
-you could also change parameters from the command line, for example
+
+### change parameters
 
 ```
-traintest model=resnet dataset=eurosat_rgb model.optimizer.lr=0.001
+traintest model=resnet dataset=eurosat_rgb model.optimizer.lr=0.001 trainer.max_epochs=10
 ```
 
-## repository
+### visualize model output
+
+```
+traintest model=unet dataset=waterbodies visualize_modelout=True
+```
+
+## repository structure
 
 see an overview of the structure [here](struct.txt)
 
@@ -77,7 +86,11 @@ to log to wandb first check that you are logged in
 ```
 wandb login
 ```
-then the config file and results will be uploaded to wandb for every run
+then the config file and results will be uploaded to wandb for every run if `logger.mode=online`, e.g.,
+
+```
+traintest model=unet dataset=waterbodies logger.mode=online
+```
 
 
 ## adding additional models / datasets
