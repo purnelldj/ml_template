@@ -1,18 +1,18 @@
 # ml_template
 
-template for ML projects
+template for ML projects, including examples of image classification and segmentation tasks using Sentinel-2 datasets
 
 ## google colab
 
-see the [notebook](ml_template_notebook.ipynb) for examples of image classification and segmentation tasks using Sentinel-2 datasets
+see the [notebook](ml_template_notebook.ipynb)
 
-note: ignore the instructions for installation below if you are using the notebook on colab, follow the instructions in the notebook
+note: ignore the instructions for installation below if you are using the notebook on colab
 
 ## installation
 
-Download and cd into repository and then:
-
 ```
+git clone https://github.com/purnelldj/ml_template.git
+cd ml_template
 python -m venv .venv
 source venv/bin/activate
 python -m pip install -e .
@@ -20,7 +20,11 @@ python -m pip install -e .
 
 ## download data from command line
 
-the waterbodies dataset
+I am hosting two compressed datasets on my google drive that can be used for testing model architectures for image classification and segmentation
+
+### dataset 1: waterbodies for semantic segmentation
+
+[This dataset on kaggle](https://www.kaggle.com/datasets/franciscoescobar/satellite-images-of-water-bodies/data) consists of thousands of Sentinel-2 images of waterbodies and corresponding water masks
 
 ```
 pip install gdown
@@ -31,7 +35,9 @@ mv waterbodies datasets/
 rm -r waterbodies.zip
 ```
 
-the EuroSAT dataset
+### dataset 2: EuroSAT for image classification
+
+[The EuroSAT dataset](https://github.com/phelber/eurosat?tab=readme-ov-file) is a collection of 27,000 lebelled Sentinel-2 images. The dataset comes in RGB (3-channel) format or 13 spectral bands. Here is a subset of 5,000 images evenly split between then 10 classes (500 images each)
 
 ```
 gdown 1ci8-w2Y0Z-hZaO-KyS4cFAiHKwfx4MMO
@@ -42,7 +48,7 @@ rm -r eurosat_rgb.zip
 
 ## usage
 
-The main entry point is in [src/traintest.py](src/traintest.py), you can use it from the command line by typing
+The main entry point is in [src/traintest.py](src/traintest.py), you can use it from the command line as follows
 
 ```
 traintest model=resnet dataset=eurosat_rgb
@@ -55,8 +61,13 @@ traintest model=resnet dataset=eurosat_rgb stage=test ckpt_path=path/to/ckpt.ckp
 you could also change parameters from the command line, for example
 
 ```
-traintest model.optimizer.lr=0.001
+traintest model=resnet dataset=eurosat_rgb model.optimizer.lr=0.001
 ```
+
+## repository
+
+see an overview of the structure [here](struct.txt)
+
 a hierarchy of configuration files is found in [src/conf](src/conf) and the default parameters are stored in [src/conf/main.yaml](src/conf/main.yaml).
 
 ## logging
