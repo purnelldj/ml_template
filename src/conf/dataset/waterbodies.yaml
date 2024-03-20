@@ -11,5 +11,10 @@ Dataset:
   _target_: datamodules.waterbodies.WBDS
   dir_ims: ${dataset.dir}Images/
   dir_masks: ${dataset.dir}Masks/
-  height: 512
-  width: 512
+
+  transform:
+    _target_: datamodules.waterbodies_utils.WbTransform
+    # height: 512
+    # width: 512
+    height: 224
+    width: 224

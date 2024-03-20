@@ -2,28 +2,18 @@ import matplotlib.pyplot as plt
 import numpy as np
 import torch
 from sklearn.model_selection import train_test_split
-from torch.utils.data import Dataset, Subset
+from torch.utils.data import Subset
 
-from datamodules.base import BaseDM
-from datamodules.eurosat_rgb_utils import (
-    class_list,
-    file_to_class,
-    file_to_class_ind,
-    file_to_im,
-    list_files,
-)
+from datamodules.base import BaseDM, BaseDS
+from datamodules.eurosat_rgb_utils import class_list, file_to_class, list_files
 
 
-class EUsatrgbDS(Dataset):
-    def __init__(
-        self, dir: str, im_height: int = 224, im_width: int = 224, im_channels: int = 3
-    ) -> None:
-        super().__init__()
+class EUsatrgbDS(BaseDS):
+    def __init__(self, dir: str, **kwargs) -> None:
+        super().__init__(**kwargs)
         self.ims_all = np.array(list_files(dir))
         self.labels_all = [file_to_class(file) for file in self.ims_all]
         self.labels_all = np.array(self.labels_all)
-        self.im_height, self.im_wdth = im_height, im_width
-        self.im_channels = im_channels
 
     def __len__(self) -> int:
         """Return length of dataset."""
@@ -31,10 +21,7 @@ class EUsatrgbDS(Dataset):
 
     def __getitem__(self, idx):
         """Return X, y for given id."""
-        file = self.ims_all[idx]
-        im = file_to_im(file, self.im_height, self.im_wdth, self.im_channels)
-        label = file_to_class_ind(file)
-        return im, label
+        return self.transform(self.ims_all[idx])
 
 
 class EUsatrgbDM(BaseDM):
@@ -87,4 +74,4 @@ class EUsatrgbDM(BaseDM):
             class_pred = class_list()[np.argmax(ypred.numpy())]
             title += f", pred class = {class_pred}"
         ax.set_title(title)
-        # plt.show()
+        ax.axis("off")

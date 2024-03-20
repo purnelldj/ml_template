@@ -64,3 +64,17 @@ def file_to_class_ind(file: str) -> torch.tensor:
     except ValueError:
         raise Exception("input with unknown class")
     return torch.tensor(ind)
+
+
+class EuTransform:
+    def __init__(
+        self, im_height: int = 224, im_width: int = 224, im_channels: int = 3
+    ) -> None:
+        self.im_height = im_height
+        self.im_width = im_width
+        self.im_channels = im_channels
+
+    def __call__(self, file: str) -> None:
+        im = file_to_im(file, self.im_height, self.im_width, self.im_channels)
+        label = file_to_class_ind(file)
+        return im, label

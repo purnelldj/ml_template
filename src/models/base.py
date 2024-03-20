@@ -8,12 +8,6 @@ from torchmetrics.classification import BinaryF1Score, MulticlassF1Score
 import wandb
 from datamodules.base import BaseDM
 
-"""
-taken inspiration from :
-https://lightning.ai/docs/pytorch/stable/common/lightning_module.html#lightningmodule
-https://github.com/ashleve/lightning-hydra-template
-"""
-
 
 class BaseModel(L.LightningModule):
     def __init__(

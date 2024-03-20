@@ -10,6 +10,9 @@ normalize: True
 Dataset:
   _target_: datamodules.eurosat_rgb.EUsatrgbDS
   dir: ${dataset.dir}
-  im_height: 224
-  im_width: 224
-  im_channels: 3
+
+  transform:
+    _target_: datamodules.eurosat_rgb_utils.EuTransform
+    im_height: 64
+    im_width: 64
+    im_channels: 3

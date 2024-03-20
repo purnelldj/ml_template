@@ -5,12 +5,22 @@ import torch
 from torch.utils.data import DataLoader, Dataset, random_split
 
 
+class ExampleTransform:
+    def __init__(self) -> None:
+        """Set parameters such as image dimensions."""
+        pass
+
+    def __call__(self) -> None:
+        """Where the transform happens."""
+        pass
+
+
 class BaseDS(Dataset):
     # https://pytorch.org/docs/stable/data.html#torch.utils.data.Dataset
 
-    def __init__(self, **kwargs) -> None:
+    def __init__(self, transform: ExampleTransform = None, **kwargs) -> None:
         super().__init__()
-        pass
+        self.transform = transform
 
     def __len__(self) -> int:
         """Return length of dataset."""
