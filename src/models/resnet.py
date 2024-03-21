@@ -1,5 +1,4 @@
 import torch
-
 # from torchvision import models
 from torch import nn
 

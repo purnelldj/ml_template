@@ -14,7 +14,8 @@ from omegaconf import DictConfig
 import wandb
 from datamodules.base import BaseDM
 from models.base import BaseModel
-from utils import instantaite_model_from_ckpt, save_fig, save_hydra_config_to_wandb
+from utils import (instantaite_model_from_ckpt, save_fig,
+                   save_hydra_config_to_wandb)
 
 
 @hydra.main(config_path="conf", config_name="main", version_base=None)

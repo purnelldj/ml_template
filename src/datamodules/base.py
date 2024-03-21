@@ -86,7 +86,7 @@ class BaseDM(L.LightningDataModule):
             self.xy_train,
             batch_size=self.batch_size,
             num_workers=self.num_workers,
-            persistent_workers=self.persistent_workers
+            persistent_workers=self.persistent_workers,
         )
 
     def val_dataloader(self, **kwargs):
@@ -94,7 +94,7 @@ class BaseDM(L.LightningDataModule):
             self.xy_val,
             batch_size=self.batch_size,
             num_workers=self.num_workers,
-            persistent_workers=self.persistent_workers
+            persistent_workers=self.persistent_workers,
         )
 
     def test_dataloader(self, **kwargs):
@@ -102,7 +102,7 @@ class BaseDM(L.LightningDataModule):
             self.xy_test,
             batch_size=self.batch_size,
             num_workers=self.num_workers,
-            persistent_workers=self.persistent_workers
+            persistent_workers=self.persistent_workers,
         )
 
     def predict_dataloader(self):
