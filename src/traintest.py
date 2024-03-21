@@ -37,63 +37,63 @@ def main(cfg: DictConfig):
     L.seed_everything(cfg.seed, workers=True)
 
     # get datamodule
-    DM: BaseDM = instantiate(cfg.dataset)
+    datamodule: BaseDM = instantiate(cfg.dataset)
     log.info("successfully instantiated the datamodule")
 
     # visualize datamodule output
     if cfg.visualize_data:
-        visualize_data_model_fun(DM)
+        visualize_data_model_fun(datamodule)
         return
 
     # get model: either instantiate or load saved model
     # Model: BaseModel = instantiate(cfg.model)
-    Model: BaseModel = instantaite_model_from_ckpt(cfg.model, cfg.ckpt_path)
-    log.info(f"model hparams: \n {Model.hparams}")
-    # log.info(Model)
+    model: BaseModel = instantaite_model_from_ckpt(cfg.model, cfg.ckpt_path)
+    log.info(f"model hparams: \n {model.hparams}")
+    # log.info(model)
 
     log.info("instantiating trainer")
     trainer: Trainer = instantiate(cfg.trainer, logger=logger)
 
     # visualize datamodule and model outputs
     if cfg.visualize_modelout:
-        visualize_data_model_fun(DM, Model, trainer)
+        visualize_data_model_fun(datamodule, model, trainer)
         return
 
     if cfg.stage == "fit":
         log.info("training model...")
-        trainer.fit(model=Model, datamodule=DM, ckpt_path=cfg.ckpt_path)
+        trainer.fit(model=model, datamodule=datamodule, ckpt_path=cfg.ckpt_path)
 
     if cfg.stage == "test":
         log.info("testing model...")
-        trainer.test(model=Model, datamodule=DM, ckpt_path=cfg.ckpt_path)
+        trainer.test(model=model, datamodule=datamodule, ckpt_path=cfg.ckpt_path)
 
     if cfg.logger_name == "wandb":
         wandb.finish()
 
 
 def visualize_data_model_fun(
-    DM: BaseDM, Model: BaseModel = None, trainer: Trainer = None, idx: int = 5
+    datamodule: BaseDM, model: BaseModel = None, trainer: Trainer = None, idx: int = 5
 ) -> None:
     """For checking datamodule and model outputs prior to training."""
-    DM.setup()
-    subset = torch.utils.data.Subset(DM.xy_train, [*range(12)])
+    datamodule.setup()
+    subset = torch.utils.data.Subset(datamodule.xy_train, [*range(12)])
     single_dl = torch.utils.data.DataLoader(subset, batch_size=12)
     x, y = next(iter(single_dl))
     xplot, yplot = x[idx], y[idx]
-    if Model is not None:
-        predict_out = trainer.predict(Model, dataloaders=single_dl)
+    if model is not None:
+        predict_out = trainer.predict(model, dataloaders=single_dl)
         logits = predict_out[0]
         print(f"output logits are of type: {type(logits)}")
         print(f"and size: {logits.shape}")
-        yhat = Model.logits_to_yhat(logits)
-        loss = Model.criterion(logits, y)
-        acc = Model.accuracy(yhat, y)
+        yhat = model.logits_to_yhat(logits)
+        loss = model.criterion(logits, y)
+        acc = model.accuracy(yhat, y)
         print(f"testing loss: {loss}")
         print(f"testing accuracy: {acc}")
         ypredplot = yhat[idx]
-        DM.plot_xy(xplot, yplot, ypredplot)
+        datamodule.plot_xy(xplot, yplot, ypredplot)
     else:
-        DM.plot_xy(xplot, yplot)
+        datamodule.plot_xy(xplot, yplot)
     save_fig("data_model_out_tmp.png")
     plt.show()
     plt.close()

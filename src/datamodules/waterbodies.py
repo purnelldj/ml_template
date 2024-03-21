@@ -4,25 +4,19 @@ import logging
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
-from torch.utils.data import Dataset
 
-from datamodules.base import BaseDM
-from datamodules.waterbodies_utils import im_mask_transform
+from datamodules.base import BaseDM, BaseDS
 
 log = logging.getLogger(__name__)
 
 
-class WBDS(Dataset):
+class WBDS(BaseDS):
     # https://pytorch.org/docs/stable/data.html#torch.utils.data.Dataset
 
-    def __init__(
-        self, dir_ims: str, dir_masks: str, height: int, width: int, **kwargs
-    ) -> None:
-        super().__init__()
+    def __init__(self, dir_ims: str, dir_masks: str, **kwargs) -> None:
+        super().__init__(**kwargs)
         self.dir_ims = dir_ims
         self.dir_masks = dir_masks
-        self.height = height
-        self.width = width
 
         # all files
         ims_all = glob.glob(self.dir_ims + "water_body_*")
@@ -35,11 +29,7 @@ class WBDS(Dataset):
         return len(self.ims_all)
 
     def __getitem__(self, idx):
-        im, mask = im_mask_transform(
-            self.ims_all[idx], self.masks_all[idx], self.height, self.width
-        )
-        mask = torch.round(mask)  # some values that arent 1 or 0
-        return im, mask
+        return self.transform(self.ims_all[idx], self.masks_all[idx])
 
 
 class WBDM(BaseDM):
@@ -63,11 +53,14 @@ class WBDM(BaseDM):
         xnp = np.transpose(x.numpy(), (1, 2, 0))
         ynp = np.squeeze(y.numpy())
         axarr[0].imshow(xnp)
+        axarr[0].set_title("image")
         axarr[1].imshow(ynp, cmap="gray")
+        axarr[1].set_title("mask")
         if ypred is not None:
             ypred = torch.sigmoid(ypred)
             ypred = (ypred > self.mask_ratio) * 1.0
             yprednp = np.squeeze(ypred.numpy())
             axarr[2].imshow(yprednp, cmap="gray")
-        # plt.show()
-        # plt.close()
+            axarr[2].set_title("prediction")
+        for ax in axarr:
+            ax.axis("off")

@@ -2,7 +2,7 @@ _target_: models.base.BinaryClass
 
 net:
   _target_: segmentation_models_pytorch.Unet
-  # encoder_name: 'resnet50'
+  # encoder_name: resnet50
   encoder_name: mobilenet_v2
   encoder_weights: imagenet
   in_channels: 3
