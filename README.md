@@ -73,6 +73,10 @@ traintest model=resnet dataset=eurosat_rgb model.optimizer.lr=0.001 trainer.max_
 traintest model=unet dataset=waterbodies visualize_modelout=True
 ```
 
+Example model prediction for run `traintest dataset=waterbodies model=unet trainer.max_epochs=20`
+
+![wbpred](waterbodies_unet_example.png "wbpred")
+
 ## repository structure
 
 see an overview of the structure [here](struct.txt)

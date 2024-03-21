@@ -6,7 +6,6 @@ from torch import Tensor
 from torchmetrics.classification import BinaryF1Score, MulticlassF1Score
 
 import wandb
-from datamodules.base import BaseDM
 
 
 class BaseModel(L.LightningModule):
@@ -18,7 +17,6 @@ class BaseModel(L.LightningModule):
         accuracy,
         scheduler: torch.optim.lr_scheduler = None,
         compile: bool = False,
-        DM: BaseDM = None,
         checkpoint_path: str = None,
     ) -> None:
         super().__init__()
@@ -186,7 +184,7 @@ class MultiClass(BaseModel):
         self.end_of_epoch_metrics(self.logits_all, self.y_all, self.yhat_all, "test")
 
     def on_train_epoch_end(self) -> None:
-        if self.epoch_counter % 10 == 0:
+        if self.epoch_counter % 1 == 0:
             self.end_of_epoch_metrics(
                 self.logits_all, self.y_all, self.yhat_all, "train"
             )
@@ -228,7 +226,7 @@ class BinaryClass(BaseModel):
         self.end_of_epoch_metrics(self.logits_all, self.y_all, self.yhat_all, "test")
 
     def on_train_epoch_end(self) -> None:
-        if self.epoch_counter % 10 == 0:
+        if self.epoch_counter % 1 == 0:
             self.end_of_epoch_metrics(
                 self.logits_all, self.y_all, self.yhat_all, "train"
             )

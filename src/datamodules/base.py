@@ -43,6 +43,7 @@ class BaseDM(L.LightningDataModule):
         dir: str = None,
         Dataset: Dataset = None,
         num_workers: int = 1,
+        persistent_workers: bool = True,
         **kwargs,
     ):
         super().__init__()
@@ -58,6 +59,7 @@ class BaseDM(L.LightningDataModule):
         self.label2id = {}
         self.id2label = {}
         self.num_workers = num_workers
+        self.persistent_workers = persistent_workers
 
     def prepare_data(self):
         """For downloading and tokenizing data."""
@@ -81,17 +83,26 @@ class BaseDM(L.LightningDataModule):
 
     def train_dataloader(self, **kwargs):
         return DataLoader(
-            self.xy_train, batch_size=self.batch_size, num_workers=self.num_workers
+            self.xy_train,
+            batch_size=self.batch_size,
+            num_workers=self.num_workers,
+            persistent_workers=self.persistent_workers
         )
 
     def val_dataloader(self, **kwargs):
         return DataLoader(
-            self.xy_val, batch_size=self.batch_size, num_workers=self.num_workers
+            self.xy_val,
+            batch_size=self.batch_size,
+            num_workers=self.num_workers,
+            persistent_workers=self.persistent_workers
         )
 
     def test_dataloader(self, **kwargs):
         return DataLoader(
-            self.xy_test, batch_size=self.batch_size, num_workers=self.num_workers
+            self.xy_test,
+            batch_size=self.batch_size,
+            num_workers=self.num_workers,
+            persistent_workers=self.persistent_workers
         )
 
     def predict_dataloader(self):
