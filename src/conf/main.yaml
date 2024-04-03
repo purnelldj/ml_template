@@ -15,7 +15,7 @@ model:
 logger:
   name:
 trainer:
-  max_epochs: 5
+  max_epochs: 10
 # note max epoch means up to not including
 
 visualize_data: False
