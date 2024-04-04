@@ -49,7 +49,7 @@ def main(cfg: DictConfig):
     # Model: BaseModel = instantiate(cfg.model)
     model: BaseModel = instantaite_model_from_ckpt(cfg.model, cfg.ckpt_path)
     log.info(f"model hparams: \n {model.hparams}")
-    log.info(model)
+    # log.info(model)
 
     log.info("instantiating trainer")
     trainer: Trainer = instantiate(cfg.trainer, logger=logger)
