@@ -1,4 +1,4 @@
-_target_: models.vitmae.ViTMAEmodule
+_target_: models.volo.Volov2
 wandb_plots: False
 class_list: [
   "AnnualCrop",

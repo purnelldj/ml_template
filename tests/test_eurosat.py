@@ -1,6 +1,6 @@
 import torch
 
-from datamodules.eurosat_rgb_utils import file_to_class, file_to_im
+from datamodules.eurosat_rgb_utils import EuTransform, ViTransform, file_to_class
 
 
 def test_file_to_class():
@@ -15,14 +15,17 @@ def test_file_to_class():
 
 
 def test_file_to_im():
-    im = file_to_im("tests/test_data/AnnualCrop_155.jpg", im_height=64, im_width=64)
-    assert im.shape == torch.Size([3, 64, 64])
-    assert im.max().numpy() <= 1
-    assert im.min().numpy() >= 0
-    im = file_to_im("tests/test_data/River_143.jpg", im_height=224, im_width=224)
+    eutfm = EuTransform(im_height=224, im_width=224)
+    im, label = eutfm("tests/test_data/AnnualCrop_155.jpg")
     assert im.shape == torch.Size([3, 224, 224])
     assert im.max().numpy() <= 1
     assert im.min().numpy() >= 0
+    assert label == 0
+    vitfm = ViTransform()
+    im, label = vitfm("tests/test_data/River_143.jpg")
+    assert im.shape == torch.Size([3, 224, 224])
+    assert label == 8
+    vitfm = ViTransform()
 
 
 if __name__ == "__main__":

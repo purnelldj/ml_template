@@ -4,7 +4,7 @@ test_size: 0.2
 val_size: 0.2
 seed: 15
 normalize: True
-# num_workers: 1
+num_workers: 7
 
 # dataset class
 Dataset:
@@ -13,6 +13,13 @@ Dataset:
 
   transform:
     _target_: datamodules.eurosat_rgb_utils.EuTransform
-    im_height: 64
-    im_width: 64
+    # for CNN:
+    # im_height: 64
+    # im_width: 64
+    # for ResNet:
+    im_height: 224
+    im_width: 224
     im_channels: 3
+
+  #transform:
+  #  _target_: datamodules.eurosat_rgb_utils.ViTransform
