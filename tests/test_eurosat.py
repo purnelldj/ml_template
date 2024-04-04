@@ -1,6 +1,6 @@
 import torch
 
-from datamodules.eurosat_rgb_utils import file_to_class, file_to_im, EuTransform, ViTransform
+from datamodules.eurosat_rgb_utils import EuTransform, ViTransform, file_to_class
 
 
 def test_file_to_class():

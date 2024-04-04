@@ -28,7 +28,6 @@ class ViTmodulev2(MultiClass):
         self.fc1 = nn.Linear(1000, 100)
         self.fc2 = nn.Linear(100, 10)
 
-
     def forward(self, x: Tensor) -> Tensor:
         logits = self.net(x).logits
         logits = self.fc1(logits)

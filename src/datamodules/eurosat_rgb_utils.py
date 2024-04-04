@@ -69,7 +69,11 @@ class EuTransform:
 
     def __call__(self, file: str) -> None:
         im = file_to_im(file)
-        im_height, im_width, im_channels = self.im_height, self.im_width, self.im_channels
+        im_height, im_width, im_channels = (
+            self.im_height,
+            self.im_width,
+            self.im_channels,
+        )
         if im.shape[0] != im_height or im.shape[1] != im_width:
             im = im_resize(im, im_height, im_width)
         assert im.shape == (im_height, im_width, im_channels)
@@ -82,7 +86,9 @@ class EuTransform:
 
 class ViTransform:
     def __init__(self) -> None:
-        self.processor = ViTImageProcessor.from_pretrained('google/vit-base-patch16-224')
+        self.processor = ViTImageProcessor.from_pretrained(
+            "google/vit-base-patch16-224"
+        )
 
     def __call__(self, file: str) -> None:
         im = file_to_im(file)
