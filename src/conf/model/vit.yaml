@@ -1,4 +1,4 @@
-_target_: models.vit.ViTv2
+_target_: models.vit.ViTv3
 wandb_plots: False
 class_list: [
   "AnnualCrop",
