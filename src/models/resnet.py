@@ -100,14 +100,14 @@ class ResNet13chanV1(MultiClass):
         self.conv1 = nn.Conv2d(in_channels=13, out_channels=3, kernel_size=1, stride=1)
         self.bn1 = nn.BatchNorm2d(3)
         self.net = model
-        self.drop_out = nn.Dropout(0.7)
-        self.fc1 = nn.Linear(num_features, num_features)
+        # self.drop_out = nn.Dropout(0.7)
+        # self.fc1 = nn.Linear(num_features, num_features)
         self.fc2 = nn.Linear(num_features, num_classes)
 
     def forward(self, x: Tensor) -> Tensor:
         logits = F.relu(self.bn1(self.conv1(x)))
         logits = self.net(logits)
-        logits = self.drop_out(logits)
-        logits = F.relu(self.fc1(logits))
+        # logits = self.drop_out(logits)
+        # logits = F.relu(self.fc1(logits))
         logits = self.fc2(logits)
         return logits
