@@ -1,0 +1,26 @@
+_target_: datamodules.eurosat_rgb.EUsatrgbDM
+batch_size: 12
+test_size: 0.2
+val_size: 0.2
+seed: 15
+normalize: True
+num_workers: 7
+
+# dataset class
+Dataset:
+  _target_: datamodules.eurosat_rgb.EUsatrgbDS
+  dir: ${dataset.dir}
+
+  transform:
+    _target_: datamodules.eurosat_rgb_utils.EuTransform
+    rgb_or_ms: ms
+    # for CNN:
+    # im_height: 64
+    # im_width: 64
+    # for ResNet:
+    im_height: 224
+    im_width: 224
+    im_channels: 13
+
+  # transform:
+  #   _target_: datamodules.eurosat_rgb_utils.ViTransform

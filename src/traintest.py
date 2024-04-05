@@ -54,6 +54,11 @@ def main(cfg: DictConfig):
     log.info("instantiating trainer")
     trainer: Trainer = instantiate(cfg.trainer, logger=logger)
 
+    # now a test to see if model accepts input
+    test_data_shape(datamodule, model, trainer)
+    log.info("test passed: model accepts data shape as input")
+    exit()
+
     # visualize datamodule and model outputs
     if cfg.visualize_modelout:
         visualize_data_model_fun(datamodule, model, trainer)
@@ -69,6 +74,21 @@ def main(cfg: DictConfig):
 
     if cfg.logger_name == "wandb":
         wandb.finish()
+
+
+def test_data_shape(
+    datamodule: BaseDM, model: BaseModel = None, trainer: Trainer = None
+) -> None:
+    """Test if output from dataloader is compatible with model."""
+    datamodule.setup()
+    subset = torch.utils.data.Subset(datamodule.xy_train, [0])
+    single_dl = torch.utils.data.DataLoader(subset, batch_size=1)
+    try:
+        trainer.predict(model, dataloaders=single_dl)
+    except Exception as e:
+        print(e)
+        x, _ = next(iter(single_dl))
+        raise Exception(f"issue passing input of shape {x.shape} to model")
 
 
 def visualize_data_model_fun(
