@@ -1,15 +1,10 @@
 import torch
 
-from datamodules.eurosat_rgb_utils import (
-    EuTransform,
-    ViTransform,
-    file_to_class,
-    tif_to_im,
-)
+from datamodules.eurosat_utils import EuTransform, ViTransform, file_to_class, tif_to_im
 
 
 def test_file_to_class():
-    file = "eurosat_rgb/SeaLake_Samples/SeaLake_995.jpg"
+    file = "eurosat/SeaLake_Samples/SeaLake_995.jpg"
     class_true = "SeaLake"
     class_test = file_to_class(file)
     assert class_true == class_test

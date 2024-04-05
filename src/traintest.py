@@ -54,10 +54,9 @@ def main(cfg: DictConfig):
     log.info("instantiating trainer")
     trainer: Trainer = instantiate(cfg.trainer, logger=logger)
 
-    # now a test to see if model accepts input
+    # test to see if model accepts input
     test_data_shape(datamodule, model, trainer)
-    log.info("test passed: model accepts data shape as input")
-    exit()
+    log.info("TEST PASSED: model accepts data shape as input")
 
     # visualize datamodule and model outputs
     if cfg.visualize_modelout:

@@ -7,7 +7,7 @@
 │   │   ├───trainer
 │   │   └───main.yaml
 │   ├───datamodules
-│   │   ├───eurosat_rgb.py
+│   │   ├───eurosat.py
 │   │   └───...
 │   ├───models
 │   │   ├───resnet.py

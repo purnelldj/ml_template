@@ -5,7 +5,7 @@ from sklearn.model_selection import train_test_split
 from torch.utils.data import Subset
 
 from datamodules.base import BaseDM, BaseDS
-from datamodules.eurosat_rgb_utils import class_list, file_to_class, list_files
+from datamodules.eurosat_utils import class_list, file_to_class, list_files
 
 
 class EUsatrgbDS(BaseDS):

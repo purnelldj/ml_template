@@ -1,4 +1,4 @@
-_target_: datamodules.eurosat_rgb.EUsatrgbDM
+_target_: datamodules.eurosat.EUsatrgbDM
 batch_size: 12
 test_size: 0.2
 val_size: 0.2
@@ -8,11 +8,11 @@ num_workers: 7
 
 # dataset class
 Dataset:
-  _target_: datamodules.eurosat_rgb.EUsatrgbDS
+  _target_: datamodules.eurosat.EUsatrgbDS
   dir: ${dataset.dir}
 
   transform:
-    _target_: datamodules.eurosat_rgb_utils.EuTransform
+    _target_: datamodules.eurosat_utils.EuTransform
     # for CNN:
     # im_height: 64
     # im_width: 64
@@ -22,4 +22,4 @@ Dataset:
     im_channels: 3
 
   # transform:
-  #   _target_: datamodules.eurosat_rgb_utils.ViTransform
+  #   _target_: datamodules.eurosat_utils.ViTransform
