@@ -19,6 +19,7 @@ dependencies = [
   "segmentation_models_pytorch==0.3.3",
   "transformers==4.38.2",
   "timm==0.9.2",
+  "rich==13.8.1",
 ]
 
 [build-system]
