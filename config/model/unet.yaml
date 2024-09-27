@@ -1,0 +1,27 @@
+class_path: models.base_lci.BinaryClass
+init_args:
+  
+  net:
+    class_path: segmentation_models_pytorch.Unet
+    init_args:
+      # encoder_name: resnet50
+      encoder_name: mobilenet_v2
+      encoder_weights: imagenet
+      in_channels: 3
+      classes: 1
+      activation: sigmoid
+
+  criterion:
+    class_path: segmentation_models_pytorch.losses.DiceLoss
+    init_args:
+      mode: binary
+
+  accuracy:
+    class_path: torchmetrics.classification.Accuracy
+    init_args:
+      task: binary
+
+  optimizer_kwargs:
+    type: AdamW
+    lr: 1e-3
+    weight_decay: 1e-4

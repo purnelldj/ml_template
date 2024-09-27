@@ -4,6 +4,7 @@ wandb
 datasets
 outputs
 lightning_logs
+.neptune/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

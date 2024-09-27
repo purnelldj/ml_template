@@ -1,0 +1,21 @@
+class_path: datamodules.waterbodies.WBDM
+init_args:
+  batch_size: 12
+  mask_ratio: 0.5
+  test_size: 0.2
+  val_size: 0.2
+  seed: 14
+  num_workers: 7
+
+  # dataset class
+  Dataset:
+    class_path: datamodules.waterbodies.WBDS
+    init_args:
+      dir_ims: datasets/waterbodies/Images/
+      dir_masks: datasets/waterbodies/Masks/
+
+      transform:
+        class_path: datamodules.waterbodies_utils.WbTransform
+        init_args:
+          height: 224
+          width: 224

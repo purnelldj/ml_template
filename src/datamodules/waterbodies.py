@@ -35,7 +35,7 @@ class WBDS(BaseDS):
 class WBDM(BaseDM):
     # https://lightning.ai/docs/pytorch/stable/data/datamodule.html#lightningdatamodule-api
 
-    def __init__(self, mask_ratio: int = 0.5, **kwargs):
+    def __init__(self, mask_ratio: float = 0.5, **kwargs):
         super().__init__(**kwargs)
         # inherit from class
         self.mask_ratio = mask_ratio

@@ -18,7 +18,7 @@ class ExampleTransform:
 class BaseDS(Dataset):
     # https://pytorch.org/docs/stable/data.html#torch.utils.data.Dataset
 
-    def __init__(self, transform: ExampleTransform = None, **kwargs) -> None:
+    def __init__(self, transform = None, **kwargs) -> None:
         super().__init__()
         self.transform = transform
 

@@ -1,0 +1,32 @@
+seed_everything: 42  # replace with true for a random seed
+
+# this doesn't work - need to specify separately
+# data: config/data/waterbodies.yaml
+# model: config/model/unet.yaml
+
+# save_config_kwargs:
+#   config_filename: poop.yaml
+
+trainer:
+  callbacks:
+    - class_path: lightning.pytorch.callbacks.RichModelSummary
+    - class_path: lightning.pytorch.callbacks.RichProgressBar
+    - class_path: lightning.pytorch.callbacks.EarlyStopping
+      init_args:
+        monitor: train_loss
+
+  # default_root_dir: outputs/lightningcli/
+
+  max_epochs: 5
+
+  precision: 16-mixed
+
+  check_val_every_n_epoch: 1
+
+  logger:
+    class_path: lightning.pytorch.loggers.neptune.NeptuneLogger
+    init_args:
+      name: wb_unet
+      project: purnelldj/ml-template
+      # id: run1
+      api_key: eyJhcGlfYWRkcmVzcyI6Imh0dHBzOi8vYXBwLm5lcHR1bmUuYWkiLCJhcGlfdXJsIjoiaHR0cHM6Ly9hcHAubmVwdHVuZS5haSIsImFwaV9rZXkiOiIxNjg0ZDZlZS1iYmVlLTQ1ODMtYWZkNS0xOGY0NTQ2YTA1MTAifQ==

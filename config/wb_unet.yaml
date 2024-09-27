@@ -1,0 +1,30 @@
+seed_everything: 42  # replace with true for a random seed
+
+# this doesn't work - need to specify separately
+# data: config/data/waterbodies.yaml
+# model: config/model/unet.yaml
+
+trainer:
+  callbacks:
+    - class_path: lightning.pytorch.callbacks.RichModelSummary
+    - class_path: lightning.pytorch.callbacks.RichProgressBar
+    - class_path: lightning.pytorch.callbacks.EarlyStopping
+      init_args:
+        monitor: train_loss
+
+  # default_root_dir: outputs/lightningcli/
+
+  max_epochs: 5
+
+  precision: 16-mixed
+
+  check_val_every_n_epoch: 1
+
+  logger:
+    class_path: lightning.pytorch.loggers.WandbLogger
+    init_args:
+      # name: shallow3
+      project: ml_template
+      group: wb_unet
+      save_dir: outputs
+      mode: offline
