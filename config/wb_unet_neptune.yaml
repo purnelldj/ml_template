@@ -28,5 +28,5 @@ trainer:
     init_args:
       name: wb_unet
       project: purnelldj/ml-template
-      # id: run1
-      api_key: eyJhcGlfYWRkcmVzcyI6Imh0dHBzOi8vYXBwLm5lcHR1bmUuYWkiLCJhcGlfdXJsIjoiaHR0cHM6Ly9hcHAubmVwdHVuZS5haSIsImFwaV9rZXkiOiIxNjg0ZDZlZS1iYmVlLTQ1ODMtYWZkNS0xOGY0NTQ2YTA1MTAifQ==
+      # run_short_id: run1
+
